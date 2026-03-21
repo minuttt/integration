@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 9 — Integration Techniques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+:root{--bg:#0f1117;--bg2:#161b27;--bg3:#1e2538;--border:#2a3352;--accent:#4f8ef7;--accent2:#7dd3fc;--gold:#f59e0b;--green:#34d399;--red:#f87171;--purple:#a78bfa;--text:#e2e8f0;--muted:#8892a4;--fbg:#111827;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.75;min-height:100vh;}
+
+/* SIDEBAR */
+#sb{position:fixed;left:0;top:0;bottom:0;width:234px;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:18px 0;z-index:100;}
+#sb .logo{padding:0 16px 12px;border-bottom:1px solid var(--border);margin-bottom:8px;}
+#sb .logo span{font-family:'Lora',serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+#sb a{display:block;padding:6px 16px;color:var(--muted);text-decoration:none;font-size:12.5px;transition:all .13s;border-left:2px solid transparent;line-height:1.4;}
+#sb a:hover,#sb a.active{color:var(--accent2);border-left-color:var(--accent);background:rgba(79,142,247,.07);}
+#sb a.sub{padding-left:28px;font-size:11.5px;}
+#sb .nl{padding:9px 16px 3px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#4a5568;font-weight:700;}
+
+/* MAIN */
+#main{margin-left:234px;padding:42px 50px;max-width:1060px;}
+
+/* HERO */
+.hero{margin-bottom:50px;padding-bottom:26px;border-bottom:1px solid var(--border);}
+.hero .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:7px;}
+.hero h1{font-family:'Lora',serif;font-size:34px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:11px;}
+.hero p{color:var(--muted);font-size:14px;max-width:520px;}
+.pill{display:inline-flex;align-items:center;gap:7px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:20px;padding:4px 13px;font-size:12.5px;color:var(--green);margin-top:12px;font-weight:600;}
+
+/* SECTIONS */
+.sec{margin-bottom:58px;scroll-margin-top:20px;}
+.sec-title{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.snum{background:var(--accent);color:#fff;font-size:12px;font-weight:700;width:27px;height:27px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.snum.gold{background:var(--gold);}
+.snum.red{background:var(--red);color:#0f1117;}
+.snum.green{background:var(--green);color:#0f1117;}
+h2.st{font-family:'Lora',serif;font-size:21px;color:#fff;font-weight:600;}
+h3.sub{font-size:13.5px;font-weight:600;color:var(--accent2);margin:24px 0 9px;padding-left:10px;border-left:3px solid var(--accent);}
+h4.ss{font-size:12px;font-weight:700;color:var(--gold);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.08em;}
+
+/* FORMULA BOXES */
+.fb{background:var(--fbg);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:15px 19px;margin:11px 0;overflow-x:auto;}
+.fb.gold{border-left-color:var(--gold);}
+.fb.green{border-left-color:var(--green);}
+.fb.purple{border-left-color:var(--purple);}
+.fb.red{border-left-color:var(--red);}
+.fb .katex-display{margin:0;}
+
+/* TABLES */
+.tw{overflow-x:auto;margin:13px 0;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead tr{background:var(--bg3);border-bottom:2px solid var(--accent);}
+thead th{padding:8px 12px;text-align:left;color:var(--accent2);font-weight:600;font-size:11px;letter-spacing:.05em;}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:rgba(79,142,247,.04);}
+tbody td{padding:9px 12px;vertical-align:top;line-height:1.6;}
+tbody td:first-child{color:var(--accent2);}
+
+/* BADGES */
+.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 6px;border-radius:4px;text-transform:uppercase;margin-left:6px;vertical-align:middle;}
+.badge.mf{background:#14532d;color:#86efac;}
+.badge.am{background:#3b1f6e;color:#c4b5fd;}
+.badge.mem{background:#7c2d12;color:#fca5a5;}
+.badge.key{background:#1e3a5f;color:#7dd3fc;}
+
+/* NOTE BOXES */
+.nb{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13.5px;display:flex;gap:9px;align-items:flex-start;}
+.nb.y{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.28);color:#fcd34d;}
+.nb.b{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.28);color:var(--accent2);}
+.nb.r{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.28);color:#fca5a5;}
+.nb.g{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.28);color:var(--green);}
+.nb.p{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.28);color:var(--purple);}
+.ni{flex-shrink:0;font-size:14px;margin-top:1px;}
+
+/* LISTS */
+ul.bl{list-style:none;margin:7px 0;padding:0;}
+ul.bl li{padding:3px 0 3px 19px;position:relative;color:var(--text);font-size:14px;}
+ul.bl li::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:700;}
+ul.bl.t li{padding-top:2px;padding-bottom:2px;}
+ol.st{counter-reset:s;list-style:none;margin:9px 0;}
+ol.st li{counter-increment:s;display:flex;gap:11px;margin-bottom:8px;align-items:flex-start;font-size:14px;}
+ol.st li::before{content:counter(s);background:var(--accent);color:#fff;font-size:10px;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
+
+/* EXAMPLE */
+.ex{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:15px 19px;margin:11px 0;}
+.exl{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
+.exl.g{color:var(--green);}
+.exl.b{color:var(--accent2);}
+.exl.gold{color:var(--gold);}
+
+/* PROSE */
+p.p{color:var(--text);margin:7px 0;line-height:1.78;font-size:14px;}
+
+/* TWO-COL */
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
+.ibox{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.ibox .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.ibox.inmf{border-color:rgba(52,211,153,.3);}.ibox.inmf .lbl{color:var(--green);}
+.ibox.notmf{border-color:rgba(167,139,250,.3);}.ibox.notmf .lbl{color:var(--purple);}
+.ibox.tip{border-color:rgba(79,142,247,.3);}.ibox.tip .lbl{color:var(--accent2);}
+
+/* LIATE */
+.liate{display:grid;grid-template-columns:44px 128px 1fr;gap:2px;margin:11px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.ll{display:flex;align-items:center;justify-content:center;font-family:'Lora',serif;font-size:21px;font-weight:700;color:#fff;padding:12px 7px;}
+.lt{display:flex;align-items:center;background:var(--bg3);padding:10px 13px;font-weight:600;font-size:13px;color:var(--accent2);}
+.le{display:flex;align-items:center;background:var(--bg2);padding:10px 13px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+
+/* FLOW */
+.flow{display:flex;flex-direction:column;gap:0;margin:11px 0;}
+.fs{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 15px;font-size:13.5px;}
+.fs+.fs{margin-top:3px;}
+.fs .sl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
+.arr{text-align:center;color:var(--muted);font-size:15px;line-height:1.1;margin:1px 0;}
+
+/* DECISION TREE */
+.dt{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px 22px;margin:13px 0;}
+.dtq{background:rgba(79,142,247,.13);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:9px 15px;font-weight:600;color:var(--accent2);font-size:13.5px;margin:7px 0 3px;text-align:center;}
+.dtr{display:flex;gap:9px;margin:3px 0;}
+.dy,.dn{flex:1;border-radius:7px;padding:8px 12px;font-size:13px;}
+.dy{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green);}
+.dn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#fca5a5;}
+.dy .tg{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:2px;}
+.dn .tg{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:2px;}
+.dc{text-align:center;color:var(--muted);font-size:13px;margin:2px 0;}
+
+/* TRIGGER GRID */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0;}
+.tc2{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px 15px;}
+.tc2 .pat{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent2);font-weight:600;margin-bottom:6px;background:var(--bg3);border-radius:4px;padding:4px 8px;display:inline-block;}
+.tc2 .mth{font-size:13px;font-weight:600;color:var(--green);}
+.tc2 .why{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;}
+
+/* MISTAKE ROWS */
+.mr{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:5px 0;}
+.mw,.mright{border-radius:6px;padding:9px 12px;font-size:13px;}
+.mw{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:6px 0 0 6px;}
+.mright{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.2);border-radius:0 6px 6px 0;}
+.mw .tg{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--red);display:block;margin-bottom:3px;text-transform:uppercase;}
+.mright .tg{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--green);display:block;margin-bottom:3px;text-transform:uppercase;}
+
+hr.dv{border:none;border-top:1px solid var(--border);margin:34px 0;}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent2);}
+.katex{color:var(--text);}
+.katex-display>.katex{color:var(--accent2);}
+.katex-display{overflow-x:auto;overflow-y:hidden;}
+
+@media(max-width:800px){
+  #sb{display:none;}
+  #main{margin-left:0;padding:20px 16px;}
+  .tc,.tgrid{grid-template-columns:1fr;}
+  .liate{grid-template-columns:36px 110px 1fr;}
+  .mr{grid-template-columns:1fr;}
+  .mw{border-radius:6px 6px 0 0;}
+  .mright{border-radius:0 0 6px 6px;}
+}
+</style>
+</head>
+<body>
+
+<nav id="sb">
+  <div class="logo"><span>Chapter 9 · H2 Math</span></div>
+  <div class="nl">🧭 Start Here</div>
+  <a href="#dec">Decision Tree</a>
+  <a href="#trig">Instant Triggers</a>
+  <div class="nl">Content</div>
+  <a href="#s1">1. Reverse of Differentiation</a>
+  <a href="#s2">2–3. Standard Forms</a>
+  <a href="#s4">4. Techniques</a>
+  <a href="#s41" class="sub">4.1 f′(x)[f(x)]ⁿ</a>
+  <a href="#s42" class="sub">4.2 f′(x)/f(x)</a>
+  <a href="#s43" class="sub">4.3 f′(x)eᶠ⁽ˣ⁾</a>
+  <a href="#s44" class="sub">4.4 Trig Functions</a>
+  <a href="#s45" class="sub">4.5 Inverse Trig</a>
+  <a href="#s46" class="sub">4.6 Log Forms</a>
+  <a href="#s47" class="sub">4.7 Rational Functions</a>
+  <a href="#s5">5. Substitution</a>
+  <a href="#s6">6. Integration by Parts</a>
+  <a href="#s7">7. Definite Integrals</a>
+  <div class="nl">📋 Reference</div>
+  <a href="#ref">All MF27 Results</a>
+  <a href="#mis">Common Mistakes</a>
+</nav>
+
+<main id="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="lbl">H2 Mathematics · YIJC 2025 JC1</div>
+  <h1>Chapter 9<br>Integration Techniques</h1>
+  <p>Complete revision notes with decision tree, instant pattern triggers, worked examples per method, trig power strategies, partial fraction types, and exam traps — all verified against lecture notes.</p>
+  <div class="pill">✦ Upgraded · exam-ready</div>
+</div>
+
+<!-- ═══════════ DECISION TREE ═══════════ -->
+<section class="sec" id="dec">
+  <div class="sec-title"><div class="snum gold">🧭</div><h2 class="st">Decision Tree — Which Technique?</h2></div>
+  <p class="p">When you see an integral, run through these in order. Stop at the first match.</p>
+  <div class="dt">
+    <div class="dtq">Step 1 — Is it a single standard form? (power, $e^x$, $a^x$, trig, $1/x$)</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Apply standard form directly. Remember to divide by $p$ if argument is $px+q$.</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 2 — Can you spot $f(x)$ and $f'(x)$ as factors?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>4.1</strong> (power chain), <strong>4.2</strong> (ln chain), or <strong>4.3</strong> (e-chain).</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 3 — Is it trig-only? ($\sin^2$, $\cos^2$, $\tan^2$, $\sin\theta\cos\theta$, powers of sin/cos)</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>4.4</strong>: apply identity first (double-angle or Pythagorean), then integrate.</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 4 — Does the denominator match $a^2\pm x^2$ or $\sqrt{a^2-x^2}$?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>4.5/4.6</strong>: inverse trig or log form. Complete the square if needed.</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 5 — Is it a ratio of polynomials (rational function)?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>4.7</strong>: long division → partial fractions → integrate each term.</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 6 — Is a substitution given, or is there an obvious "inner function"?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>Section 5</strong>: substitution. It will always be given in exams.</div>
+      <div class="dn"><span class="tg">✗ No</span>↓</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Step 7 — Product of two different function types, or single non-integrable function like $\ln x$, $\tan^{-1}x$?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Use <strong>Section 6</strong>: integration by parts. Apply LIATE to choose $u$.</div>
+      <div class="dn"><span class="tg">✗ No</span>Re-examine — you likely missed a simplification at an earlier step.</div>
+    </div>
+  </div>
+  <div class="nb y"><span class="ni">💡</span><span><strong>When NOT to use IBP:</strong> If the new integral is harder than the original after one round, try swapping $u$ and $dv/dx$. If there is no clear LIATE priority between the two factors, IBP is likely wrong — try substitution instead.</span></div>
+</section>
+
+<!-- ═══════════ INSTANT TRIGGERS ═══════════ -->
+<section class="sec" id="trig">
+  <div class="sec-title"><div class="snum gold">⚡</div><h2 class="st">Instant Pattern Triggers</h2></div>
+  <p class="p">See the pattern → know the method in under 5 seconds.</p>
+  <div class="tgrid">
+    <div class="tc2"><div><span class="pat">√(a²− x²)</span></div><div style="margin-top:5px"><span class="mth">→ x = a sinθ substitution</span> or inverse sin form</div><div class="why">$a^2-a^2\sin^2\theta=a^2\cos^2\theta$ eliminates the root</div></div>
+    <div class="tc2"><div><span class="pat">1 / (a²+ x²)</span></div><div style="margin-top:5px"><span class="mth">→ Inverse tan form</span> or x = a tanθ</div><div class="why">Directly matches $\frac{1}{a}\tan^{-1}(\frac{x}{a})+C$ from MF27</div></div>
+    <div class="tc2"><div><span class="pat">1 / (x²− a²)</span></div><div style="margin-top:5px"><span class="mth">→ Log form §4.6</span></div><div class="why">$\frac{1}{2a}\ln\left|\frac{x-a}{x+a}\right|+C$ via partial fractions</div></div>
+    <div class="tc2"><div><span class="pat">numerator = derivative of denominator</span></div><div style="margin-top:5px"><span class="mth">→ ln form §4.2</span></div><div class="why">$\int\frac{f'(x)}{f(x)}dx=\ln|f(x)|+C$. Introduce constant if ratio is off.</div></div>
+    <div class="tc2"><div><span class="pat">f′(x) · [f(x)]ⁿ</span></div><div style="margin-top:5px"><span class="mth">→ Power chain §4.1</span></div><div class="why">$\frac{[f(x)]^{n+1}}{n+1}+C$. One function is derivative of the other.</div></div>
+    <div class="tc2"><div><span class="pat">f′(x) · eᶠ⁽ˣ⁾</span></div><div style="margin-top:5px"><span class="mth">→ Exponential chain §4.3</span></div><div class="why">$e^{f(x)}+C$. Coefficient must match $f'(x)$ exactly (introduce constant).</div></div>
+    <div class="tc2"><div><span class="pat">ln x alone, tan⁻¹x alone</span></div><div style="margin-top:5px"><span class="mth">→ IBP × 1 (multiply by 1)</span></div><div class="why">$u=\ln x$ or $u=\tan^{-1}x$, &nbsp; $dv/dx=1$</div></div>
+    <div class="tc2"><div><span class="pat">x · eˣ &nbsp; or &nbsp; x · sin x</span></div><div style="margin-top:5px"><span class="mth">→ IBP once (A before T or E)</span></div><div class="why">Algebraic as $u$, trig or exponential as $dv/dx$</div></div>
+    <div class="tc2"><div><span class="pat">x² · eˣ &nbsp; or &nbsp; x² · sin x</span></div><div style="margin-top:5px"><span class="mth">→ IBP twice</span></div><div class="why">Differentiate polynomial twice until it vanishes.</div></div>
+    <div class="tc2"><div><span class="pat">eˣ · sin x &nbsp; or &nbsp; eˣ · cos x</span></div><div style="margin-top:5px"><span class="mth">→ Cyclic IBP (twice + collect)</span></div><div class="why">Original integral reappears on RHS — move to LHS and divide.</div></div>
+    <div class="tc2"><div><span class="pat">sin²x, cos²x, tan²x</span></div><div style="margin-top:5px"><span class="mth">→ Identity first, then integrate</span></div><div class="why">Double-angle for $\sin^2, \cos^2$. Pythagorean for $\tan^2, \cot^2$.</div></div>
+    <div class="tc2"><div><span class="pat">degree(top) ≥ degree(bottom)</span></div><div style="margin-top:5px"><span class="mth">→ Long division first</span></div><div class="why">Must reduce to proper fraction before any other technique.</div></div>
+  </div>
+</section>
+
+<hr class="dv">
+
+<!-- ═══════════ SECTION 1 ═══════════ -->
+<section class="sec" id="s1">
+  <div class="sec-title"><div class="snum">1</div><h2 class="st">Integration as the Reverse of Differentiation</h2></div>
+  <div class="fb gold">$$\frac{d}{dx}\big[f(x)\big]=f'(x)\quad\Longrightarrow\quad\int f'(x)\,dx=f(x)+C$$</div>
+  <ul class="bl">
+    <li>$f'(x)$ is the <strong>derivative</strong> of $f(x)$; &nbsp; $f(x)$ is the <strong>anti-derivative</strong> of $f'(x)$</li>
+    <li>$C$ = arbitrary constant of integration — always include for indefinite integrals</li>
+    <li>$\displaystyle\int\cdots dx$ = "indefinite integral of … with respect to $x$"</li>
+  </ul>
+  <h3 class="sub">Basic Properties</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Property</th><th>Formula</th></tr></thead>
+    <tbody>
+      <tr><td>Addition / Subtraction</td><td>$\displaystyle\int\big[f(x)\pm g(x)\big]dx=\int f(x)\,dx\pm\int g(x)\,dx$</td></tr>
+      <tr><td>Scalar Multiple</td><td>$\displaystyle\int kf(x)\,dx=k\int f(x)\,dx,\quad k\in\mathbb{R},\,k\neq 0$</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nb r"><span class="ni">⚠</span><span><strong>Cannot split products or quotients:</strong> $\int x\sin x\,dx\neq\!\left(\int x\,dx\right)\!\!\left(\int\sin x\,dx\right)$. Also $\int xe^x\,dx\neq x\int e^x\,dx$.</span></div>
+</section>
+
+<!-- ═══════════ SECTION 2–3 ═══════════ -->
+<section class="sec" id="s2">
+  <div class="sec-title"><div class="snum">2–3</div><h2 class="st">Standard Forms</h2></div>
+
+  <h3 class="sub">(I) Power, Log, Exponential <span class="badge am">A-Math</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Standard Form</th><th>General Form — replace $x$ with $px+q$, &nbsp;$p\neq 0$</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int x^n\,dx=\dfrac{x^{n+1}}{n+1}+C,\quad n\in\mathbb{Q},\,n\neq-1$</td><td>$\displaystyle\int(px+q)^n\,dx=\dfrac{(px+q)^{n+1}}{p(n+1)}+C$</td></tr>
+      <tr><td>$\displaystyle\int\frac{1}{x}\,dx=\ln|x|+C$</td><td>$\displaystyle\int\frac{1}{px+q}\,dx=\frac{1}{p}\ln|px+q|+C$</td></tr>
+      <tr><td>$\displaystyle\int e^x\,dx=e^x+C$</td><td>$\displaystyle\int e^{px+q}\,dx=\frac{1}{p}e^{px+q}+C$</td></tr>
+      <tr><td>$\displaystyle\int a^x\,dx=\frac{a^x}{\ln a}+C,\quad a>0$</td><td>$\displaystyle\int a^{px+q}\,dx=\frac{a^{px+q}}{p\ln a}+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">(II) Trigonometric <span class="badge am">A-Math</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Standard Form</th><th>General Form</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int\cos x\,dx=\sin x+C$</td><td>$\displaystyle\int\cos(px+q)\,dx=\tfrac{1}{p}\sin(px+q)+C$</td></tr>
+      <tr><td>$\displaystyle\int\sin x\,dx=-\cos x+C$</td><td>$\displaystyle\int\sin(px+q)\,dx=-\tfrac{1}{p}\cos(px+q)+C$</td></tr>
+      <tr><td>$\displaystyle\int\sec^2x\,dx=\tan x+C$</td><td>$\displaystyle\int\sec^2(px+q)\,dx=\tfrac{1}{p}\tan(px+q)+C$</td></tr>
+      <tr><td>$\displaystyle\int\operatorname{cosec}^2x\,dx=-\cot x+C$</td><td>$\displaystyle\int\operatorname{cosec}^2(px+q)\,dx=-\tfrac{1}{p}\cot(px+q)+C$</td></tr>
+      <tr><td>$\displaystyle\int\sec x\tan x\,dx=\sec x+C$</td><td>$\displaystyle\int\sec(px+q)\tan(px+q)\,dx=\tfrac{1}{p}\sec(px+q)+C$</td></tr>
+      <tr><td>$\displaystyle\int\operatorname{cosec}x\cot x\,dx=-\operatorname{cosec}x+C$</td><td>$\displaystyle\int\operatorname{cosec}(px+q)\cot(px+q)\,dx=-\tfrac{1}{p}\operatorname{cosec}(px+q)+C$</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nb r"><span class="ni">⚠</span><span>All angles <strong>must be in radians</strong>.</span></div>
+  <div class="nb b"><span class="ni">💡</span><span>Drop modulus only when the argument is provably always positive (e.g. $\ln(x^2+1)$ since $x^2+1>0$ always). Otherwise keep $|\,\cdot\,|$.</span></div>
+</section>
+
+<!-- ═══════════ SECTION 4 ═══════════ -->
+<section class="sec" id="s4">
+  <div class="sec-title"><div class="snum">4</div><h2 class="st">Techniques of Integration</h2></div>
+
+  <!-- 4.1 -->
+  <h3 class="sub" id="s41">4.1 &nbsp; $\displaystyle\int f'(x)\,[f(x)]^n\,dx$, &nbsp; $n\neq-1$</h3>
+  <div class="fb">$$\int f'(x)\,[f(x)]^n\,dx=\frac{[f(x)]^{n+1}}{n+1}+C,\qquad n\neq-1$$</div>
+  <p class="p"><strong>Key check:</strong> Is one function the derivative of the other (up to a constant factor)? If yes, introduce the constant and apply directly.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>$f(x)$</th><th>$f'(x)$ check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int 2x(x^2+1)^3\,dx$</td><td>$x^2+1$</td><td>$2x$ ✓</td><td>$\dfrac{(x^2+1)^4}{4}+C$</td></tr>
+      <tr><td>$\displaystyle\int\sin x\cos^2x\,dx$</td><td>$\cos x$</td><td>$-\sin x$; introduce $-1$</td><td>$-\dfrac{1}{3}\cos^3x+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{2x}{(x^2-4)^2}\,dx$</td><td>$x^2-4$</td><td>$2x$ ✓, $n=-2$</td><td>$-\dfrac{1}{x^2-4}+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{\ln x}{x}\,dx$</td><td>$\ln x$</td><td>$\tfrac{1}{x}$ ✓, $n=1$</td><td>$\dfrac{1}{2}(\ln x)^2+C$</td></tr>
+      <tr><td>$\displaystyle\int\tan x\sec^2x\,dx$</td><td>$\tan x$</td><td>$\sec^2x$ ✓, $n=1$</td><td>$\dfrac{1}{2}\tan^2x+C$</td></tr>
+      <tr><td>$\displaystyle\int(2x+3)(x^2+3x)^2\,dx$</td><td>$x^2+3x$</td><td>$2x+3$ ✓, $n=2$</td><td>$\dfrac{(x^2+3x)^3}{3}+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- 4.2 -->
+  <h3 class="sub" id="s42">4.2 &nbsp; $\displaystyle\int\dfrac{f'(x)}{f(x)}\,dx$ &nbsp; (the $n=-1$ case)</h3>
+  <div class="fb green">$$\int\frac{f'(x)}{f(x)}\,dx=\ln|f(x)|+C$$</div>
+  <p class="p"><strong>Key check:</strong> Is the numerator the derivative of the denominator? Multiply/divide by a constant to make the ratio exact.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>Manipulation</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int\cot x\,dx$</td><td>$=\int\frac{\cos x}{\sin x}dx$; $f=\sin x$</td><td>$\ln|\sin x|+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{x}{3+2x^2}\,dx$</td><td>$=\frac{1}{4}\int\frac{4x}{3+2x^2}dx$; $f=3+2x^2$</td><td>$\frac{1}{4}\ln(3+2x^2)+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{x(1+\ln x)}\,dx$</td><td>$=\int\frac{1/x}{1+\ln x}dx$; $f=1+\ln x$</td><td>$\ln|1+\ln x|+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{e^{-2x}}{1+e^{-2x}}\,dx$</td><td>$=-\frac{1}{2}\int\frac{-2e^{-2x}}{1+e^{-2x}}dx$; $f=1+e^{-2x}$</td><td>$-\frac{1}{2}\ln(1+e^{-2x})+C$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{e^{3x}-e^{-3x}}{e^{3x}+e^{-3x}}\,dx$</td><td>$f=e^{3x}+e^{-3x}$, $f'=3e^{3x}-3e^{-3x}$; introduce $\frac{1}{3}$</td><td>$\frac{1}{3}\ln(e^{3x}+e^{-3x})+C$</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nb b"><span class="ni">ℹ</span><span>When denominator is always positive (e.g. $3+2x^2$, $1+e^{-2x}$), write $\ln(\cdots)$ without modulus. When sign is uncertain, keep $\ln|\cdots|$.</span></div>
+
+  <!-- 4.3 -->
+  <h3 class="sub" id="s43">4.3 &nbsp; $\displaystyle\int f'(x)\,e^{f(x)}\,dx$</h3>
+  <div class="fb purple">$$\int f'(x)\,e^{f(x)}\,dx=e^{f(x)}+C$$</div>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>$f(x)$ and check</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int 2x\,e^{x^2}\,dx$</td><td>$f=x^2$, $f'=2x$ ✓</td><td>$e^{x^2}+C$</td></tr>
+      <tr><td>$\displaystyle\int 4\cos x\,e^{4\sin x}\,dx$</td><td>$f=4\sin x$, $f'=4\cos x$ ✓</td><td>$e^{4\sin x}+C$</td></tr>
+      <tr><td>$\displaystyle\int 3x^2e^{2x^3}\,dx$</td><td>$f=2x^3$, $f'=6x^2$; introduce $\frac{1}{2}$</td><td>$\frac{1}{2}e^{2x^3}+C$</td></tr>
+      <tr><td>$\displaystyle\int 3e^{2\cos x}\sin x\,dx$</td><td>$f=2\cos x$, $f'=-2\sin x$; introduce $-\frac{3}{2}$</td><td>$-\frac{3}{2}e^{2\cos x}+C$</td></tr>
+      <tr><td>$\displaystyle\int\frac{6}{7}e^{3\sec x}\sec x\tan x\,dx$</td><td>$f=3\sec x$, $f'=3\sec x\tan x$; introduce $\frac{2}{7}$</td><td>$\frac{2}{7}e^{3\sec x}+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <!-- 4.4 -->
+  <h3 class="sub" id="s44">4.4 &nbsp; Trigonometric Functions</h3>
+
+  <h4 class="ss">4.4.1 — tan, cot, sec, cosec <span class="badge mf">In MF27</span></h4>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>Result</th><th>General form (replace $x$ with $px+q$)</th></tr></thead>
+    <tbody>
+      <tr><td>$\int\tan x\,dx$</td><td>$\ln|\sec x|+C$</td><td>$\frac{1}{p}\ln|\sec(px+q)|+C$</td></tr>
+      <tr><td>$\int\cot x\,dx$</td><td>$\ln|\sin x|+C$</td><td>$\frac{1}{p}\ln|\sin(px+q)|+C$</td></tr>
+      <tr><td>$\int\sec x\,dx$</td><td>$\ln|\sec x+\tan x|+C$</td><td>$\frac{1}{p}\ln|\sec(px+q)+\tan(px+q)|+C$</td></tr>
+      <tr><td>$\int\operatorname{cosec}x\,dx$</td><td>$-\ln|\operatorname{cosec}x+\cot x|+C$</td><td>$-\frac{1}{p}\ln|\operatorname{cosec}(px+q)+\cot(px+q)|+C$</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nb b"><span class="ni">ℹ</span><span>Proof of $\int\tan x\,dx$: write as $\int\frac{\sin x}{\cos x}dx=-\int\frac{-\sin x}{\cos x}dx=-\ln|\cos x|+C=\ln|\sec x|+C$ via §4.2. Proof of $\int\sec x\,dx$: multiply numerator and denominator by $(\sec x+\tan x)$ first.</span></div>
+
+  <h4 class="ss">4.4.2 — Powers: Even vs Odd Strategy <span class="badge mem">Memorise</span></h4>
+  <div class="tc">
+    <div class="ibox tip">
+      <div class="lbl">Even powers — use double-angle identity</div>
+      <ul class="bl t">
+        <li>$\sin^2A=\dfrac{1-\cos2A}{2}$ &nbsp;<span style="color:var(--green);font-size:12px">(MF27)</span></li>
+        <li>$\cos^2A=\dfrac{1+\cos2A}{2}$ &nbsp;<span style="color:var(--green);font-size:12px">(MF27)</span></li>
+        <li>$\tan^2x=\sec^2x-1$ &nbsp;<span style="color:var(--red);font-size:12px">(not MF27)</span></li>
+        <li>$\cot^2x=\operatorname{cosec}^2x-1$ &nbsp;<span style="color:var(--red);font-size:12px">(not MF27)</span></li>
+      </ul>
+    </div>
+    <div class="ibox tip">
+      <div class="lbl">Odd powers — split one factor, use §4.1</div>
+      <ul class="bl t">
+        <li>$\sin^3x=\sin x(1-\cos^2x)$<br><span style="color:var(--muted);font-size:12px">→ let $f=\cos x$, use §4.1</span></li>
+        <li>$\cos^3x=\cos x(1-\sin^2x)$<br><span style="color:var(--muted);font-size:12px">→ let $f=\sin x$, use §4.1</span></li>
+        <li>$\tan^3x=\tan x(\sec^2x-1)$<br><span style="color:var(--muted);font-size:12px">→ split: $\int\tan x\sec^2x\,dx-\int\tan x\,dx$</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>Strategy</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int\sin^2x\,dx$</td><td>Even: $\frac{1}{2}(1-\cos2x)$</td><td>$\frac{1}{4}(2x-\sin2x)+C$</td></tr>
+      <tr><td>$\displaystyle\int\cos^2x\,dx$</td><td>Even: $\frac{1}{2}(1+\cos2x)$</td><td>$\frac{1}{4}(\sin2x+2x)+C$</td></tr>
+      <tr><td>$\displaystyle\int\tan^2x\,dx$</td><td>Even: $\sec^2x-1$</td><td>$\tan x-x+C$</td></tr>
+      <tr><td>$\displaystyle\int\cot^2x\,dx$</td><td>Even: $\operatorname{cosec}^2x-1$</td><td>$-\cot x-x+C$</td></tr>
+      <tr><td>$\displaystyle\int\sin x\cos^2x\,dx$</td><td>Odd sin: $f=\cos x$</td><td>$-\frac{1}{3}\cos^3x+C$</td></tr>
+      <tr><td>$\displaystyle\int\cos x\sin^2x\,dx$</td><td>Odd cos: $f=\sin x$</td><td>$\frac{1}{3}\sin^3x+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h4 class="ss">4.4.3 — $\displaystyle\int\sin\theta\cos\theta\,d\theta$</h4>
+  <p class="p">Use $\sin2A=2\sin A\cos A$ (MF27):</p>
+  <div class="fb">$$\int\sin\theta\cos\theta\,d\theta=\frac{1}{2}\int\sin2\theta\,d\theta=-\frac{1}{4}\cos2\theta+C$$</div>
+  <div class="ex"><div class="exl g">Example</div>
+    $\displaystyle\int 2\sin2\theta\cos2\theta\,d\theta=\int\sin4\theta\,d\theta=-\dfrac{1}{4}\cos4\theta+C$
+  </div>
+
+  <!-- 4.5 -->
+  <h3 class="sub" id="s45">4.5 &nbsp; $\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2+x^2}\,dx$ <span class="badge mf">MF27</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Standard Form</th><th>General Form (replace $x$ with $px+q$)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx=\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C,\;\;|x|<a$</td>
+        <td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-(px+q)^2}}\,dx=\dfrac{1}{p}\sin^{-1}\!\!\left(\dfrac{px+q}{a}\right)+C$</td>
+      </tr>
+      <tr>
+        <td>$\displaystyle\int\dfrac{1}{a^2+x^2}\,dx=\dfrac{1}{a}\tan^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td>
+        <td>$\displaystyle\int\dfrac{1}{a^2+(px+q)^2}\,dx=\dfrac{1}{ap}\tan^{-1}\!\!\left(\dfrac{px+q}{a}\right)+C$</td>
+      </tr>
+    </tbody>
+  </table></div>
+  <p class="p"><strong>Non-standard denominators:</strong> complete the square to reveal $a^2\pm(px+q)^2$.</p>
+  <div class="ex"><div class="exl g">Worked Examples — Completing the Square</div>
+    <ul class="bl">
+      <li><strong>$\displaystyle\int\dfrac{1}{x^2-10x+30}\,dx$:</strong><br>$x^2-10x+30=(x-5)^2+5\;\Rightarrow\;\dfrac{1}{\sqrt{5}}\tan^{-1}\!\!\left(\dfrac{x-5}{\sqrt{5}}\right)+C$</li>
+      <li><strong>$\displaystyle\int\dfrac{1}{\sqrt{6-2x-x^2}}\,dx$:</strong><br>$6-2x-x^2=7-(x+1)^2\;\Rightarrow\;\sin^{-1}\!\!\left(\dfrac{x+1}{\sqrt{7}}\right)+C$</li>
+      <li><strong>$\displaystyle\int\dfrac{1}{9+(2x-1)^2}\,dx$:</strong><br>Already in form with $a=3,p=2$: $\;\dfrac{1}{6}\tan^{-1}\!\!\left(\dfrac{2x-1}{3}\right)+C$</li>
+      <li><strong>$\displaystyle\int\dfrac{3}{\sqrt{5-(2x-3)^2}}\,dx$:</strong><br>$a=\sqrt{5},p=2$: $\;\dfrac{3}{2}\sin^{-1}\!\!\left(\dfrac{2x-3}{\sqrt{5}}\right)+C$</li>
+    </ul>
+  </div>
+
+  <!-- 4.6 -->
+  <h3 class="sub" id="s46">4.6 &nbsp; $\displaystyle\int\dfrac{1}{x^2-a^2}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$ <span class="badge mf">MF27</span></h3>
+  <div class="tw"><table>
+    <thead><tr><th>Standard Form</th><th>Domain</th><th>General Form</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>$\displaystyle\int\dfrac{1}{x^2-a^2}\,dx=\dfrac{1}{2a}\ln\!\left|\dfrac{x-a}{x+a}\right|+C$</td>
+        <td>$x>a$</td>
+        <td>$\displaystyle\int\dfrac{1}{(px+q)^2-a^2}\,dx=\dfrac{1}{2ap}\ln\!\left|\dfrac{(px+q)-a}{(px+q)+a}\right|+C$</td>
+      </tr>
+      <tr>
+        <td>$\displaystyle\int\dfrac{1}{a^2-x^2}\,dx=\dfrac{1}{2a}\ln\!\left|\dfrac{a+x}{a-x}\right|+C$</td>
+        <td>$|x|<a$</td>
+        <td>$\displaystyle\int\dfrac{1}{a^2-(px+q)^2}\,dx=\dfrac{1}{2ap}\ln\!\left|\dfrac{a+(px+q)}{a-(px+q)}\right|+C$</td>
+      </tr>
+    </tbody>
+  </table></div>
+  <div class="nb b"><span class="ni">ℹ</span><span>Proof via partial fractions: $\dfrac{1}{x^2-a^2}=\dfrac{1}{2a}\!\!\left(\dfrac{1}{x-a}-\dfrac{1}{x+a}\right)$. Always use modulus in practice.</span></div>
+  <div class="ex"><div class="exl g">Worked Examples</div>
+    <ul class="bl">
+      <li>$\displaystyle\int\dfrac{5}{x^2-3}\,dx=\dfrac{5}{2\sqrt{3}}\ln\!\left|\dfrac{x-\sqrt{3}}{x+\sqrt{3}}\right|+C$</li>
+      <li>$\displaystyle\int\dfrac{5}{9-4x^2}\,dx$: $a=3,p=2$ → $\dfrac{5}{12}\ln\!\left|\dfrac{3+2x}{3-2x}\right|+C$</li>
+      <li>$\displaystyle\int\dfrac{1}{(2x+1)^2-9}\,dx$: $a=3,p=2$ → $\dfrac{1}{12}\ln\!\left|\dfrac{x-1}{x+2}\right|+C$</li>
+      <li>$\displaystyle\int\dfrac{1}{9-(2x-1)^2}\,dx$: $a=3,p=2$ → $\dfrac{1}{12}\ln\!\left|\dfrac{x+1}{2-x}\right|+C$</li>
+    </ul>
+  </div>
+
+  <!-- 4.7 -->
+  <h3 class="sub" id="s47">4.7 &nbsp; Rational Functions $\displaystyle\int\dfrac{g(x)}{f(x)}\,dx$</h3>
+  <div class="flow">
+    <div class="fs"><div class="sl">Step 1 — Proper or improper?</div>If $\deg(g)\geq\deg(f)$: perform long division or juggling to write as polynomial + proper fraction. Integrate polynomial terms directly.</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 2 — Factorisable denominator?</div>If $f(x)$ factors into linear/quadratic factors: use partial fractions, then integrate each term.</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 3 — Match a standard form</div>Express as: (i) $\dfrac{f'(x)}{f(x)}$, &nbsp; (ii) $\dfrac{1}{f(x)}$ from MF27 standard forms, &nbsp; or &nbsp; (iii) $a\cdot\dfrac{f'(x)}{f(x)}+b\cdot\dfrac{1}{f(x)}$ by splitting the numerator.</div>
+  </div>
+
+  <h4 class="ss">Partial Fraction Types <span class="badge key">Exam structure</span></h4>
+  <div class="tw"><table>
+    <thead><tr><th>Denominator type</th><th>Partial fraction form</th><th>Example setup</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Distinct linear factors</td>
+        <td>$\dfrac{A}{x-a}+\dfrac{B}{x-b}$</td>
+        <td>$\dfrac{3x}{(x-5)(x+1)}=\dfrac{A}{x-5}+\dfrac{B}{x+1}$</td>
+      </tr>
+      <tr>
+        <td>Repeated linear factor</td>
+        <td>$\dfrac{A}{x-a}+\dfrac{B}{(x-a)^2}$</td>
+        <td>$\dfrac{x+1}{(x-2)^2}=\dfrac{A}{x-2}+\dfrac{B}{(x-2)^2}$</td>
+      </tr>
+      <tr>
+        <td>Irreducible quadratic factor<br><span style="color:var(--muted);font-size:12px">(cannot be factored over $\mathbb{R}$)</span></td>
+        <td>$\dfrac{A}{x-a}+\dfrac{Bx+C}{x^2+bx+c}$</td>
+        <td>$\dfrac{x}{(x-1)(x^2+2)}=\dfrac{A}{x-1}+\dfrac{Bx+C}{x^2+2}$</td>
+      </tr>
+    </tbody>
+  </table></div>
+  <div class="nb y"><span class="ni">💡</span><span><strong>Cover-up rule</strong> for distinct linear factors: to find $A$ in $\dfrac{A}{x-a}+\cdots$, cover $(x-a)$ in the original denominator and substitute $x=a$ into what remains.</span></div>
+  <div class="ex"><div class="exl g">Worked Examples</div>
+    <ul class="bl">
+      <li><strong>Improper → long division:</strong> $\displaystyle\int\dfrac{3x-2}{x+1}\,dx=\int\!\!\left(3-\dfrac{5}{x+1}\right)dx=3x-5\ln|x+1|+C$</li>
+      <li><strong>Split numerator (type iii):</strong> $\displaystyle\int\dfrac{3x+2}{x^2+1}\,dx=\dfrac{3}{2}\ln(x^2+1)+2\tan^{-1}x+C$</li>
+      <li><strong>Partial fractions:</strong> $\displaystyle\int\dfrac{3x}{(x-5)(x+1)}\,dx$: $A=\frac{5}{2}$, $B=\frac{1}{2}$ (cover-up) → $\dfrac{5}{2}\ln|x-5|+\dfrac{1}{2}\ln|x+1|+C$</li>
+      <li><strong>Irreducible quadratic:</strong> $\displaystyle\int\dfrac{x^2+2x+1}{x^2-2x+3}\,dx=\int\!\!\left(1+\dfrac{4x-2}{x^2-2x+3}\right)dx=x+2\ln(x^2-2x+3)+\sqrt{2}\tan^{-1}\!\!\left(\dfrac{x-1}{\sqrt{2}}\right)+C$</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 5 ═══════════ -->
+<section class="sec" id="s5">
+  <div class="sec-title"><div class="snum">5</div><h2 class="st">Integration by Substitution</h2></div>
+  <div class="nb b"><span class="ni">ℹ</span><span>The substitution <strong>will always be given</strong> in exam questions when this method is required.</span></div>
+  <h3 class="sub">Procedure</h3>
+  <ol class="st">
+    <li>Let $u=g(x)$. Differentiate: $\dfrac{du}{dx}$. Rearrange for $dx$ in terms of $du$.</li>
+    <li>Express all remaining $x$-terms using $u$ (using $x=g^{-1}(u)$ if needed).</li>
+    <li>Integrate with respect to $u$.</li>
+    <li>Substitute back: replace $u$ with $g(x)$ to express the answer in $x$.</li>
+  </ol>
+  <div class="ex"><div class="exl g">Worked Example — Algebraic substitution</div>
+    <p class="p">Use $u=1+2x$ to find $\displaystyle\int x(1+2x)^{11}\,dx$.</p>
+    <ul class="bl">
+      <li>$u=1+2x\Rightarrow x=\dfrac{u-1}{2}$, &nbsp; $\dfrac{du}{dx}=2\Rightarrow dx=\dfrac{du}{2}$</li>
+      <li>$=\displaystyle\int\dfrac{u-1}{2}\cdot u^{11}\cdot\dfrac{1}{2}\,du=\dfrac{1}{4}\int(u^{12}-u^{11})\,du=\dfrac{1}{4}\!\left(\dfrac{u^{13}}{13}-\dfrac{u^{12}}{12}\right)+C$</li>
+      <li>$=\dfrac{(1+2x)^{13}}{52}-\dfrac{(1+2x)^{12}}{48}+C$</li>
+    </ul>
+  </div>
+
+  <h3 class="sub">Trigonometric Substitutions</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Pattern</th><th>Substitution</th><th>Simplification</th><th>Principal range</th></tr></thead>
+    <tbody>
+      <tr><td>$\sqrt{a^2-x^2}$</td><td>$x=a\sin\theta$ or $x=a\cos\theta$</td><td>$a^2\cos^2\theta$ or $a^2\sin^2\theta$</td><td>$0\leq\theta\leq\pi$ (for $\cos$)</td></tr>
+      <tr><td>$\sqrt{a^2+x^2}$</td><td>$x=a\tan\theta$</td><td>$a^2\sec^2\theta$</td><td>$-\frac{\pi}{2}<\theta<\frac{\pi}{2}$</td></tr>
+    </tbody>
+  </table></div>
+  <div class="nb y"><span class="ni">💡</span><span>Draw a right-angled triangle from the substitution to convert $\sin\theta$, $\cos\theta$, etc. back to $x$. Since $\theta$ is a principal value, $\sin\theta\geq0$, so $\sqrt{\sin^2\theta}=\sin\theta$ (no absolute value needed).</span></div>
+  <div class="ex"><div class="exl g">Worked Example — Trig substitution</div>
+    <p class="p">Use $x=3\cos\theta$ to find $\displaystyle\int\sqrt{9-x^2}\,dx$.</p>
+    <ul class="bl">
+      <li>$\dfrac{dx}{d\theta}=-3\sin\theta$, &nbsp; $9-x^2=9\sin^2\theta$, so $\sqrt{9-x^2}=3\sin\theta$ (since $\sin\theta\geq0$)</li>
+      <li>$=\displaystyle\int 3\sin\theta\cdot(-3\sin\theta)\,d\theta=-9\int\sin^2\theta\,d\theta=-\dfrac{9}{2}\!\left(\theta-\dfrac{\sin2\theta}{2}\right)+C$</li>
+      <li>Triangle from $x=3\cos\theta$: $\theta=\cos^{-1}\!\!\left(\dfrac{x}{3}\right)$, $\sin\theta=\dfrac{\sqrt{9-x^2}}{3}$, $\sin2\theta=\dfrac{2x\sqrt{9-x^2}}{9}$</li>
+      <li>$=-\dfrac{1}{2}\!\left[9\cos^{-1}\!\!\left(\dfrac{x}{3}\right)-x\sqrt{9-x^2}\right]+C$</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 6 ═══════════ -->
+<section class="sec" id="s6">
+  <div class="sec-title"><div class="snum">6</div><h2 class="st">Integration by Parts (IBP)</h2></div>
+  <div class="fb gold">$$\int u\,\frac{dv}{dx}\,dx=uv-\int v\,\frac{du}{dx}\,dx$$</div>
+
+  <h3 class="sub">LIATE — Choosing $u$</h3>
+  <p class="p">The function type appearing <strong>earliest</strong> in LIATE is $u$; the other factor is $\dfrac{dv}{dx}$.</p>
+  <div class="liate">
+    <div class="ll" style="background:#1e3a8a">L</div><div class="lt">Logarithmic</div><div class="le">ln(x−2), ln(x²+1)</div>
+    <div class="ll" style="background:#1e40af">I</div><div class="lt">Inverse Trig</div><div class="le">sin⁻¹(3x), tan⁻¹(x/3)</div>
+    <div class="ll" style="background:#2563eb">A</div><div class="lt">Algebraic</div><div class="le">x⁴, x²+3, x, 1</div>
+    <div class="ll" style="background:#3b82f6">T</div><div class="lt">Trigonometric</div><div class="le">sin x, cos 2x, tan 4x</div>
+    <div class="ll" style="background:#60a5fa;color:#1e3a8a">E</div><div class="lt">Exponential</div><div class="le">e^(3x+1), 2^x</div>
+  </div>
+  <div class="nb y"><span class="ni">💡</span><span><strong>When NOT to use IBP:</strong> If the integral becomes harder after one round, try swapping $u$ and $dv/dx$. If there is no clear LIATE priority, IBP is likely wrong — try substitution or a chain-rule approach (§4.1–4.3) instead.</span></div>
+
+  <h3 class="sub">Case 1 — IBP Once (A×T or A×E)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>$u$</th><th>$dv/dx$</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int x\sin x\,dx$</td><td>$x$ (A)</td><td>$\sin x$ (T)</td><td>$-x\cos x+\sin x+C$</td></tr>
+      <tr><td>$\displaystyle\int xe^{-2x}\,dx$</td><td>$x$ (A)</td><td>$e^{-2x}$ (E)</td><td>$-\frac{1}{4}e^{-2x}(2x+1)+C$</td></tr>
+      <tr><td>$\displaystyle\int x\cos2x\,dx$</td><td>$x$ (A)</td><td>$\cos2x$ (T)</td><td>$\frac{1}{2}x\sin2x+\frac{1}{4}\cos2x+C$</td></tr>
+      <tr><td>$\displaystyle\int 3xe^{x/2}\,dx$</td><td>$3x$ (A)</td><td>$e^{x/2}$ (E)</td><td>$6(x-2)e^{x/2}+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Case 2 — Single Function (multiply by 1)</h3>
+  <p class="p">For $\ln x$, $\sin^{-1}x$, $\tan^{-1}x$ alone: write as $\int(1)\cdot(\text{function})\,dx$. Set $u=$ the function (L or I), $\dfrac{dv}{dx}=1\Rightarrow v=x$.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>$u$</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int\ln(1+x^2)\,dx$</td><td>$\ln(1+x^2)$ (L)</td><td>$x\ln(1+x^2)-2x+2\tan^{-1}x+C$</td></tr>
+      <tr><td>$\displaystyle\int\tan^{-1}2x\,dx$</td><td>$\tan^{-1}2x$ (I)</td><td>$x\tan^{-1}2x-\frac{1}{4}\ln(1+4x^2)+C$</td></tr>
+      <tr><td>$\displaystyle\int\ln(1+2x)\,dx$</td><td>$\ln(1+2x)$ (L)</td><td>$x\ln(1+2x)-x+\frac{1}{2}\ln|1+2x|+C$</td></tr>
+      <tr><td>$\displaystyle\int\tan^{-1}\!\!\left(\frac{x}{3}\right)dx$</td><td>$\tan^{-1}(x/3)$ (I)</td><td>$x\tan^{-1}\!\!\left(\frac{x}{3}\right)-\frac{3}{2}\ln(9+x^2)+C$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Case 3 — IBP Twice (A²×T or A²×E)</h3>
+  <div class="ex"><div class="exl g">Worked Example — $\displaystyle\int x^2e^{4x}\,dx$</div>
+    <ul class="bl">
+      <li><strong>R1:</strong> $u=x^2$, $\frac{dv}{dx}=e^{4x}$ → $=\frac{1}{4}x^2e^{4x}-\frac{1}{2}\displaystyle\int xe^{4x}\,dx$</li>
+      <li><strong>R2</strong> on $\displaystyle\int xe^{4x}\,dx$: $u=x$, $\frac{dv}{dx}=e^{4x}$ → $=\frac{1}{4}xe^{4x}-\frac{1}{16}e^{4x}+C_1$</li>
+      <li><strong>Combine:</strong> $\dfrac{e^{4x}}{32}(8x^2-4x+1)+C$ ✓</li>
+    </ul>
+  </div>
+
+  <h3 class="sub">Case 4 — Cyclic IBP (E×T, two rounds)</h3>
+  <div class="ex"><div class="exl g">Worked Example — $\displaystyle\int e^x\sin2x\,dx$</div>
+    <ul class="bl">
+      <li><strong>R1:</strong> $u=\sin2x$ (T), $\frac{dv}{dx}=e^x$ → $=e^x\sin2x-2\displaystyle\int e^x\cos2x\,dx$</li>
+      <li><strong>R2</strong> on $\displaystyle\int e^x\cos2x\,dx$: $u=\cos2x$ (T), $\frac{dv}{dx}=e^x$ → $=e^x\cos2x+2\displaystyle\int e^x\sin2x\,dx$</li>
+      <li><strong>Substitute R2 into R1:</strong> $\displaystyle\int e^x\sin2x\,dx=e^x\sin2x-2e^x\cos2x-4\displaystyle\int e^x\sin2x\,dx$</li>
+      <li>$\Rightarrow 5\displaystyle\int e^x\sin2x\,dx=e^x(\sin2x-2\cos2x)+D$</li>
+      <li>$\Rightarrow\displaystyle\int e^x\sin2x\,dx=\dfrac{1}{5}e^x(\sin2x-2\cos2x)+C$ ✓</li>
+    </ul>
+  </div>
+  <div class="nb r"><span class="ni">⚠</span><span><strong>Cyclic trap:</strong> Do NOT change your choice of $u$ between R1 and R2. Both rounds must use the same LIATE type as $u$ (T in the example above). Switching causes $0=0$ and no result.</span></div>
+</section>
+
+<!-- ═══════════ SECTION 7 ═══════════ -->
+<section class="sec" id="s7">
+  <div class="sec-title"><div class="snum">7</div><h2 class="st">Definite Integrals</h2></div>
+  <div class="fb">$$\int_a^b f(x)\,dx=\big[F(x)\big]_a^b=F(b)-F(a),\qquad F'(x)=f(x)$$</div>
+  <div class="nb b"><span class="ni">ℹ</span><span>$C$ cancels in definite integrals — do not write it in working.</span></div>
+
+  <h3 class="sub">Properties</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Property</th><th>Formula</th></tr></thead>
+    <tbody>
+      <tr><td>Reversal of limits</td><td>$\displaystyle\int_a^b f\,dx=-\int_b^a f\,dx$</td></tr>
+      <tr><td>Scalar multiple</td><td>$\displaystyle\int_a^b kf\,dx=k\int_a^b f\,dx$</td></tr>
+      <tr><td>Addition</td><td>$\displaystyle\int_a^b(f\pm g)\,dx=\int_a^b f\,dx\pm\int_a^b g\,dx$</td></tr>
+      <tr><td>Splitting</td><td>$\displaystyle\int_a^b f\,dx+\int_b^c f\,dx=\int_a^c f\,dx$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">GC — Numerical Evaluation</h3>
+  <p class="p">Press <code>ALPHA</code> → <code>WINDOW</code> → <code>4: fnInt(</code>. Enter the limits and integrand.</p>
+  <div class="nb r"><span class="ni">⚠</span><span>Always set GC to <strong>RADIAN mode</strong> for trigonometric definite integrals.</span></div>
+
+  <h3 class="sub">Definite Integrals with Substitution</h3>
+  <ol class="st">
+    <li><strong>Change limits:</strong> substitute $x=a$ and $x=b$ into $u=g(x)$ → new limits $u_1,u_2$.</li>
+    <li>Replace $dx$, integrand, and limits — all in terms of $u$.</li>
+    <li>Integrate in $u$ with the new limits. <em>No need to revert to $x$.</em></li>
+  </ol>
+  <div class="ex"><div class="exl g">Worked Example</div>
+    <p class="p">Use $t=\sqrt{x+2}$ to evaluate $\displaystyle\int_{-1}^{1}x\sqrt{x+2}\,dx$.</p>
+    <ul class="bl">
+      <li>$x=-1\Rightarrow t=1$; $x=1\Rightarrow t=\sqrt{3}$. &nbsp; $x=t^2-2$, &nbsp; $dx=2t\,dt$</li>
+      <li>$=\displaystyle\int_1^{\sqrt{3}}(t^2-2)(t)(2t)\,dt=2\int_1^{\sqrt{3}}(t^4-2t^2)\,dt=2\!\left[\dfrac{t^5}{5}-\dfrac{2t^3}{3}\right]_1^{\sqrt{3}}=\dfrac{2}{15}(7-3\sqrt{3})$</li>
+    </ul>
+  </div>
+
+  <h3 class="sub">Definite Integrals with IBP</h3>
+  <div class="fb">$$\int_a^b u\,\frac{dv}{dx}\,dx=\Big[uv\Big]_a^b-\int_a^b v\,\frac{du}{dx}\,dx$$</div>
+  <div class="ex"><div class="exl g">Worked Example — $\displaystyle\int_0^1 xe^{2x}\,dx$</div>
+    <ul class="bl">
+      <li>$u=x$, $\frac{dv}{dx}=e^{2x}$ → $v=\frac{1}{2}e^{2x}$</li>
+      <li>$=\!\left[\dfrac{x}{2}e^{2x}\right]_0^1-\displaystyle\int_0^1\dfrac{1}{2}e^{2x}\,dx=\dfrac{e^2}{2}-\left[\dfrac{e^{2x}}{4}\right]_0^1=\dfrac{e^2}{2}-\dfrac{e^2-1}{4}=\dfrac{e^2+1}{4}$</li>
+    </ul>
+  </div>
+  <div class="nb r"><span class="ni">⚠</span><span><strong>Presentation error:</strong> do NOT write $\displaystyle\left[x\cdot\tfrac{1}{2}e^{2x}-\int_0^1\tfrac{1}{2}e^{2x}dx\right]_0^1$. The bracket $\big[uv\big]$ and the remaining integral must have limits applied separately.</span></div>
+</section>
+
+<!-- ═══════════ REFERENCE ═══════════ -->
+<section class="sec" id="ref">
+  <div class="sec-title"><div class="snum gold">★</div><h2 class="st">All MF27 Results — This Chapter</h2></div>
+  <div class="tw"><table>
+    <thead><tr><th>Integral</th><th>Result</th><th>Condition</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$</td><td>$\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td><td>$|x|<a$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{a^2+x^2}\,dx$</td><td>$\dfrac{1}{a}\tan^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td><td>all $x$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{x^2-a^2}\,dx$</td><td>$\dfrac{1}{2a}\ln\!\left|\dfrac{x-a}{x+a}\right|+C$</td><td>$x>a$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$</td><td>$\dfrac{1}{2a}\ln\!\left|\dfrac{a+x}{a-x}\right|+C$</td><td>$|x|<a$</td></tr>
+      <tr><td>$\int\tan x\,dx$</td><td>$\ln|\sec x|+C$</td><td>$|x|<\frac{\pi}{2}$</td></tr>
+      <tr><td>$\int\cot x\,dx$</td><td>$\ln|\sin x|+C$</td><td>$0<x<\pi$</td></tr>
+      <tr><td>$\int\sec x\,dx$</td><td>$\ln|\sec x+\tan x|+C$</td><td>$|x|<\frac{\pi}{2}$</td></tr>
+      <tr><td>$\int\operatorname{cosec}x\,dx$</td><td>$-\ln|\operatorname{cosec}x+\cot x|+C$</td><td>$0<x<\pi$</td></tr>
+      <tr><td>$\int\sec x\tan x\,dx$</td><td>$\sec x+C$</td><td>—</td></tr>
+      <tr><td>$\int\operatorname{cosec}x\cot x\,dx$</td><td>$-\operatorname{cosec}x+C$</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Identities — In MF27 vs Must Memorise</h3>
+  <div class="tc">
+    <div class="ibox inmf"><div class="lbl">✓ In MF27</div>
+      <ul class="bl t"><li>$\sin2A=2\sin A\cos A$</li><li>$\cos2A=\cos^2A-\sin^2A$</li><li>$\cos2A=2\cos^2A-1$</li><li>$\cos2A=1-2\sin^2A$</li></ul>
+    </div>
+    <div class="ibox notmf"><div class="lbl">✗ NOT in MF27 — Memorise</div>
+      <ul class="bl t"><li>$\sin^2A+\cos^2A=1$</li><li>$1+\tan^2A=\sec^2A$</li><li>$1+\cot^2A=\operatorname{cosec}^2A$</li></ul>
+    </div>
+  </div>
+
+  <h3 class="sub">Standard Angles</h3>
+  <div class="tw"><table>
+    <thead><tr><th>$\theta$</th><th>$0$</th><th>$\frac{\pi}{6}$</th><th>$\frac{\pi}{4}$</th><th>$\frac{\pi}{3}$</th><th>$\frac{\pi}{2}$</th></tr></thead>
+    <tbody>
+      <tr><td>$\sin\theta$</td><td>$0$</td><td>$\frac{1}{2}$</td><td>$\frac{1}{\sqrt{2}}$</td><td>$\frac{\sqrt{3}}{2}$</td><td>$1$</td></tr>
+      <tr><td>$\cos\theta$</td><td>$1$</td><td>$\frac{\sqrt{3}}{2}$</td><td>$\frac{1}{\sqrt{2}}$</td><td>$\frac{1}{2}$</td><td>$0$</td></tr>
+      <tr><td>$\tan\theta$</td><td>$0$</td><td>$\frac{1}{\sqrt{3}}$</td><td>$1$</td><td>$\sqrt{3}$</td><td>undef.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ═══════════ COMMON MISTAKES ═══════════ -->
+<section class="sec" id="mis">
+  <div class="sec-title"><div class="snum red">✗</div><h2 class="st">Common Mistakes — Wrong vs Right</h2></div>
+  <p class="p">The most penalised errors. Each pair shows the mistake and the correct form.</p>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>$\displaystyle\int\cos(3x+1)\,dx=\sin(3x+1)+C$</div>
+    <div class="mright"><span class="tg">✓ Right</span>$\displaystyle\int\cos(3x+1)\,dx=\dfrac{1}{3}\sin(3x+1)+C$ &nbsp; (divide by $p=3$)</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>$\displaystyle\int e^{3x}\,dx=3e^{3x}+C$ &nbsp; (multiplied by $p$)</div>
+    <div class="mright"><span class="tg">✓ Right</span>$\displaystyle\int e^{3x}\,dx=\dfrac{1}{3}e^{3x}+C$ &nbsp; (divide by $p=3$)</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>$\displaystyle\int\frac{1}{x^2+4}\,dx=\tan^{-1}\!\!\left(\frac{x}{4}\right)+C$ &nbsp; ($a$ confused with $a^2$)</div>
+    <div class="mright"><span class="tg">✓ Right</span>$a=2$: $\;\displaystyle\int\frac{1}{x^2+4}\,dx=\dfrac{1}{2}\tan^{-1}\!\!\left(\dfrac{x}{2}\right)+C$</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>For $\displaystyle\int\frac{3+2x^2}{x^2+1}\,dx$: jump straight to partial fractions</div>
+    <div class="mright"><span class="tg">✓ Right</span>Degrees equal → long division first: $=\displaystyle\int\!\!\left(2+\dfrac{1}{x^2+1}\right)dx=2x+\tan^{-1}x+C$</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>$\displaystyle\int\frac{x}{3+2x^2}\,dx=\ln|3+2x^2|+C$ &nbsp; (no constant factor)</div>
+    <div class="mright"><span class="tg">✓ Right</span>$f'(x)=4x$; introduce $\frac{1}{4}$: $=\dfrac{1}{4}\ln(3+2x^2)+C$</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>$\displaystyle\int\sin^2x\,dx=\dfrac{\sin^3x}{3}+C$ &nbsp; (power rule — wrong)</div>
+    <div class="mright"><span class="tg">✓ Right</span>Identity first: $\sin^2x=\frac{1-\cos2x}{2}$, so $=\dfrac{x}{2}-\dfrac{\sin2x}{4}+C$</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>In cyclic IBP: change $u$ choice in Round 2 to "try other way"</div>
+    <div class="mright"><span class="tg">✓ Right</span>Keep same LIATE type as $u$ in both rounds — switching gives $0=0$, no result</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>In definite substitution: keep original limits $a$, $b$ after substituting $u=g(x)$</div>
+    <div class="mright"><span class="tg">✓ Right</span>Always change limits: substitute $x=a$, $x=b$ into $u=g(x)$ for new limits $u_1$, $u_2$</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>Writing $\ln(2-x)$ without modulus (can be negative)</div>
+    <div class="mright"><span class="tg">✓ Right</span>Write $\ln|2-x|$. Drop modulus only when the argument is provably always positive.</div>
+  </div>
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong</span>IBP definite: $\displaystyle\left[x\cdot\tfrac{1}{2}e^{2x}-\int_0^1\tfrac{1}{2}e^{2x}dx\right]_0^1$</div>
+    <div class="mright"><span class="tg">✓ Right</span>$\left[\tfrac{x}{2}e^{2x}\right]_0^1-\displaystyle\int_0^1\tfrac{1}{2}e^{2x}dx$ &nbsp; — evaluate $[uv]$ separately before the integral</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+const secs=document.querySelectorAll('.sec');
+const links=document.querySelectorAll('#sb a');
+const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){links.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`#sb a[href="#${en.target.id}"]`);if(l)l.classList.add('active');}});},{rootMargin:'-15% 0px -75% 0px'});
+secs.forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
