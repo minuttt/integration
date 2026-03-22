@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chapter 9 — Integration Techniques</title>
+<title>H2 Mathematics — Integration Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
@@ -11,32 +11,142 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
   onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
 <style>
+/* ═══════════════════════════════════════════
+   SHARED BASE STYLES (union of Ch9 + Ch10)
+═══════════════════════════════════════════ */
 :root{--bg:#0f1117;--bg2:#161b27;--bg3:#1e2538;--border:#2a3352;--accent:#4f8ef7;--accent2:#7dd3fc;--gold:#f59e0b;--green:#34d399;--red:#f87171;--purple:#a78bfa;--text:#e2e8f0;--muted:#8892a4;--fbg:#111827;}
 *{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.75;min-height:100vh;}
 
-/* SIDEBAR */
-#sb{position:fixed;left:0;top:0;bottom:0;width:234px;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:18px 0;z-index:100;}
-#sb .logo{padding:0 16px 12px;border-bottom:1px solid var(--border);margin-bottom:8px;}
-#sb .logo span{font-family:'Lora',serif;font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
-#sb a{display:block;padding:6px 16px;color:var(--muted);text-decoration:none;font-size:12.5px;transition:all .13s;border-left:2px solid transparent;line-height:1.4;}
-#sb a:hover,#sb a.active{color:var(--accent2);border-left-color:var(--accent);background:rgba(79,142,247,.07);}
-#sb a.sub{padding-left:28px;font-size:11.5px;}
-#sb .nl{padding:9px 16px 3px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#4a5568;font-weight:700;}
+/* ═══════════════════════════════════════════
+   CHAPTER SELECTOR BAR (top of page)
+═══════════════════════════════════════════ */
+#chap-selector{
+  position:fixed;top:0;left:0;right:0;height:52px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:0;
+  z-index:200;padding:0 16px;
+}
+#chap-selector .sel-brand{
+  font-family:'Lora',serif;font-size:12px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);
+  padding-right:20px;border-right:1px solid var(--border);margin-right:16px;
+  white-space:nowrap;
+}
+#chap-selector .sel-tabs{display:flex;gap:6px;}
+.sel-tab{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 18px;border-radius:8px;
+  background:transparent;border:1px solid var(--border);
+  color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;
+  font-weight:500;cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.sel-tab:hover{background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.4);color:var(--accent2);}
+.sel-tab.active{background:rgba(79,142,247,.15);border-color:var(--accent);color:#fff;font-weight:600;}
+.sel-tab .tab-num{
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
+  width:20px;height:20px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sel-tab.active .tab-num{background:#fff;color:var(--accent);}
+.sel-tab:nth-child(2) .tab-num{background:var(--gold);}
+.sel-tab:nth-child(2).active .tab-num{background:#fff;color:var(--gold);}
+.sel-tab:nth-child(2):hover .tab-num{background:var(--gold);}
 
-/* MAIN */
-#main{margin-left:234px;padding:42px 50px;max-width:1060px;}
+/* ═══════════════════════════════════════════
+   CHAPTER PANELS — each chapter is a full panel
+═══════════════════════════════════════════ */
+.chap-panel{display:none;}
+.chap-panel.active{display:block;}
 
-/* HERO */
+/* ═══════════════════════════════════════════
+   SIDEBAR — offset for the top bar
+═══════════════════════════════════════════ */
+#c9-sb, #c10-sb{
+  position:fixed;left:0;top:52px;bottom:0;width:234px;
+  background:linear-gradient(180deg,#131929 0%,#0f1520 100%);
+  border-right:1px solid rgba(79,142,247,.15);
+  overflow-y:auto;padding:18px 0;z-index:100;
+}
+/* Subtle scrollbar */
+#c9-sb::-webkit-scrollbar,#c10-sb::-webkit-scrollbar{width:3px;}
+#c9-sb::-webkit-scrollbar-track,#c10-sb::-webkit-scrollbar-track{background:transparent;}
+#c9-sb::-webkit-scrollbar-thumb,#c10-sb::-webkit-scrollbar-thumb{background:rgba(79,142,247,.25);border-radius:3px;}
+
+#c9-sb .logo, #c10-sb .logo{
+  padding:0 16px 14px;
+  border-bottom:1px solid rgba(79,142,247,.12);
+  margin-bottom:6px;
+}
+#c9-sb .logo span, #c10-sb .logo span{
+  font-family:'Lora',serif;font-size:11px;letter-spacing:.18em;
+  text-transform:uppercase;
+  background:linear-gradient(90deg,var(--accent2),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;font-weight:600;
+}
+#c9-sb a, #c10-sb a{
+  display:block;padding:5px 16px 5px 18px;
+  color:#5a7a9e;
+  text-decoration:none;font-size:12.5px;font-weight:400;
+  transition:all .15s;border-left:2px solid transparent;line-height:1.45;
+  letter-spacing:.01em;
+}
+#c9-sb a:hover{
+  color:var(--accent2);border-left-color:rgba(79,142,247,.5);
+  background:rgba(79,142,247,.06);
+  padding-left:20px;
+}
+#c9-sb a.active{
+  color:#e2f0ff;border-left-color:var(--accent);
+  background:linear-gradient(90deg,rgba(79,142,247,.14),rgba(79,142,247,.03));
+  font-weight:600;
+}
+#c10-sb a:hover{
+  color:var(--accent2);border-left-color:rgba(79,142,247,.5);
+  background:rgba(79,142,247,.06);
+  padding-left:20px;
+}
+#c10-sb a.active{
+  color:#e2f0ff;border-left-color:var(--accent);
+  background:linear-gradient(90deg,rgba(79,142,247,.14),rgba(79,142,247,.03));
+  font-weight:600;
+}
+#c9-sb a.sub, #c10-sb a.sub{
+  padding-left:30px;font-size:11.5px;color:#4a6480;
+}
+#c9-sb a.sub:hover, #c10-sb a.sub:hover{padding-left:32px;}
+#c9-sb a.sub.active, #c10-sb a.sub.active{padding-left:30px;}
+#c9-sb .nl, #c10-sb .nl{
+  padding:12px 16px 4px;font-size:9.5px;letter-spacing:.2em;
+  text-transform:uppercase;font-weight:700;
+  background:linear-gradient(90deg,var(--gold),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;opacity:.7;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT AREAS — offset for top bar
+═══════════════════════════════════════════ */
+#c9-main, #c10-main{
+  margin-left:234px;padding:42px 50px;max-width:1060px;
+  padding-top:94px; /* 52px topbar + 42px original */
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
 .hero{margin-bottom:50px;padding-bottom:26px;border-bottom:1px solid var(--border);}
 .hero .lbl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:7px;}
 .hero h1{font-family:'Lora',serif;font-size:34px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:11px;}
 .hero p{color:var(--muted);font-size:14px;max-width:520px;}
 .pill{display:inline-flex;align-items:center;gap:7px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:20px;padding:4px 13px;font-size:12.5px;color:var(--green);margin-top:12px;font-weight:600;}
 
-/* SECTIONS */
-.sec{margin-bottom:58px;scroll-margin-top:20px;}
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+.sec{margin-bottom:58px;scroll-margin-top:72px;}
 .sec-title{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
 .snum{background:var(--accent);color:#fff;font-size:12px;font-weight:700;width:27px;height:27px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .snum.gold{background:var(--gold);}
@@ -46,7 +156,9 @@ h2.st{font-family:'Lora',serif;font-size:21px;color:#fff;font-weight:600;}
 h3.sub{font-size:13.5px;font-weight:600;color:var(--accent2);margin:24px 0 9px;padding-left:10px;border-left:3px solid var(--accent);}
 h4.ss{font-size:12px;font-weight:700;color:var(--gold);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.08em;}
 
-/* FORMULA BOXES */
+/* ═══════════════════════════════════════════
+   FORMULA BOXES
+═══════════════════════════════════════════ */
 .fb{background:var(--fbg);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:15px 19px;margin:11px 0;overflow-x:auto;}
 .fb.gold{border-left-color:var(--gold);}
 .fb.green{border-left-color:var(--green);}
@@ -54,7 +166,9 @@ h4.ss{font-size:12px;font-weight:700;color:var(--gold);margin:16px 0 6px;text-tr
 .fb.red{border-left-color:var(--red);}
 .fb .katex-display{margin:0;}
 
-/* TABLES */
+/* ═══════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════ */
 .tw{overflow-x:auto;margin:13px 0;}
 table{width:100%;border-collapse:collapse;font-size:13.5px;}
 thead tr{background:var(--bg3);border-bottom:2px solid var(--accent);}
@@ -64,14 +178,18 @@ tbody tr:hover{background:rgba(79,142,247,.04);}
 tbody td{padding:9px 12px;vertical-align:top;line-height:1.6;}
 tbody td:first-child{color:var(--accent2);}
 
-/* BADGES */
+/* ═══════════════════════════════════════════
+   BADGES
+═══════════════════════════════════════════ */
 .badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 6px;border-radius:4px;text-transform:uppercase;margin-left:6px;vertical-align:middle;}
 .badge.mf{background:#14532d;color:#86efac;}
 .badge.am{background:#3b1f6e;color:#c4b5fd;}
 .badge.mem{background:#7c2d12;color:#fca5a5;}
 .badge.key{background:#1e3a5f;color:#7dd3fc;}
 
-/* NOTE BOXES */
+/* ═══════════════════════════════════════════
+   NOTE BOXES
+═══════════════════════════════════════════ */
 .nb{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:13.5px;display:flex;gap:9px;align-items:flex-start;}
 .nb.y{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.28);color:#fcd34d;}
 .nb.b{background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.28);color:var(--accent2);}
@@ -80,7 +198,9 @@ tbody td:first-child{color:var(--accent2);}
 .nb.p{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.28);color:var(--purple);}
 .ni{flex-shrink:0;font-size:14px;margin-top:1px;}
 
-/* LISTS */
+/* ═══════════════════════════════════════════
+   LISTS
+═══════════════════════════════════════════ */
 ul.bl{list-style:none;margin:7px 0;padding:0;}
 ul.bl li{padding:3px 0 3px 19px;position:relative;color:var(--text);font-size:14px;}
 ul.bl li::before{content:"›";position:absolute;left:4px;color:var(--accent);font-weight:700;}
@@ -89,17 +209,23 @@ ol.st{counter-reset:s;list-style:none;margin:9px 0;}
 ol.st li{counter-increment:s;display:flex;gap:11px;margin-bottom:8px;align-items:flex-start;font-size:14px;}
 ol.st li::before{content:counter(s);background:var(--accent);color:#fff;font-size:10px;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:3px;}
 
-/* EXAMPLE */
+/* ═══════════════════════════════════════════
+   EXAMPLE BOXES
+═══════════════════════════════════════════ */
 .ex{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:15px 19px;margin:11px 0;}
 .exl{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;margin-bottom:8px;}
 .exl.g{color:var(--green);}
 .exl.b{color:var(--accent2);}
 .exl.gold{color:var(--gold);}
 
-/* PROSE */
+/* ═══════════════════════════════════════════
+   PROSE
+═══════════════════════════════════════════ */
 p.p{color:var(--text);margin:7px 0;line-height:1.78;font-size:14px;}
 
-/* TWO-COL */
+/* ═══════════════════════════════════════════
+   TWO-COL / IBOX
+═══════════════════════════════════════════ */
 .tc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0;}
 .ibox{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
 .ibox .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
@@ -107,20 +233,26 @@ p.p{color:var(--text);margin:7px 0;line-height:1.78;font-size:14px;}
 .ibox.notmf{border-color:rgba(167,139,250,.3);}.ibox.notmf .lbl{color:var(--purple);}
 .ibox.tip{border-color:rgba(79,142,247,.3);}.ibox.tip .lbl{color:var(--accent2);}
 
-/* LIATE */
+/* ═══════════════════════════════════════════
+   LIATE TABLE (Ch9)
+═══════════════════════════════════════════ */
 .liate{display:grid;grid-template-columns:44px 128px 1fr;gap:2px;margin:11px 0;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
 .ll{display:flex;align-items:center;justify-content:center;font-family:'Lora',serif;font-size:21px;font-weight:700;color:#fff;padding:12px 7px;}
 .lt{display:flex;align-items:center;background:var(--bg3);padding:10px 13px;font-weight:600;font-size:13px;color:var(--accent2);}
 .le{display:flex;align-items:center;background:var(--bg2);padding:10px 13px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
 
-/* FLOW */
+/* ═══════════════════════════════════════════
+   FLOW STEPS
+═══════════════════════════════════════════ */
 .flow{display:flex;flex-direction:column;gap:0;margin:11px 0;}
 .fs{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 15px;font-size:13.5px;}
 .fs+.fs{margin-top:3px;}
 .fs .sl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:3px;}
 .arr{text-align:center;color:var(--muted);font-size:15px;line-height:1.1;margin:1px 0;}
 
-/* DECISION TREE */
+/* ═══════════════════════════════════════════
+   DECISION TREE
+═══════════════════════════════════════════ */
 .dt{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px 22px;margin:13px 0;}
 .dtq{background:rgba(79,142,247,.13);border:1px solid rgba(79,142,247,.3);border-radius:8px;padding:9px 15px;font-weight:600;color:var(--accent2);font-size:13.5px;margin:7px 0 3px;text-align:center;}
 .dtr{display:flex;gap:9px;margin:3px 0;}
@@ -131,14 +263,18 @@ p.p{color:var(--text);margin:7px 0;line-height:1.78;font-size:14px;}
 .dn .tg{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--red);display:block;margin-bottom:2px;}
 .dc{text-align:center;color:var(--muted);font-size:13px;margin:2px 0;}
 
-/* TRIGGER GRID */
+/* ═══════════════════════════════════════════
+   TRIGGER GRID (Ch9)
+═══════════════════════════════════════════ */
 .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0;}
 .tc2{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px 15px;}
 .tc2 .pat{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--accent2);font-weight:600;margin-bottom:6px;background:var(--bg3);border-radius:4px;padding:4px 8px;display:inline-block;}
 .tc2 .mth{font-size:13px;font-weight:600;color:var(--green);}
 .tc2 .why{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;}
 
-/* MISTAKE ROWS */
+/* ═══════════════════════════════════════════
+   MISTAKE ROWS
+═══════════════════════════════════════════ */
 .mr{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:5px 0;}
 .mw,.mright{border-radius:6px;padding:9px 12px;font-size:13px;}
 .mw{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);border-radius:6px 0 0 6px;}
@@ -146,61 +282,131 @@ p.p{color:var(--text);margin:7px 0;line-height:1.78;font-size:14px;}
 .mw .tg{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--red);display:block;margin-bottom:3px;text-transform:uppercase;}
 .mright .tg{font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--green);display:block;margin-bottom:3px;text-transform:uppercase;}
 
+/* ═══════════════════════════════════════════
+   CH10 EXTRA: TRAP / PATTERN / LAW / DANGER / INSIGHT
+═══════════════════════════════════════════ */
+.trap{background:rgba(248,113,113,.06);border:1.5px solid rgba(248,113,113,.35);border-radius:10px;padding:16px 18px;margin:14px 0;}
+.trap .trap-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.trap ol{counter-reset:tr;list-style:none;margin:0;padding:0;}
+.trap ol li{counter-increment:tr;display:flex;gap:10px;margin-bottom:6px;font-size:13.5px;align-items:flex-start;}
+.trap ol li::before{content:counter(tr);background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.pattern{background:rgba(167,139,250,.06);border:1.5px solid rgba(167,139,250,.35);border-radius:10px;padding:14px 17px;margin:12px 0;}
+.pattern .pat-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;}
+.law{background:rgba(79,142,247,.07);border:1.5px solid rgba(79,142,247,.4);border-radius:10px;padding:14px 17px;margin:12px 0;}
+.law .law-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+.danger{background:rgba(248,113,113,.09);border:2px solid rgba(248,113,113,.5);border-radius:10px;padding:14px 17px;margin:12px 0;}
+.danger .dan-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--red);margin-bottom:8px;}
+.insight{background:rgba(52,211,153,.07);border:1.5px solid rgba(52,211,153,.35);border-radius:10px;padding:14px 17px;margin:12px 0;}
+.insight .ins-lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:8px;}
+.presolver{background:linear-gradient(135deg,rgba(245,158,11,.07),rgba(79,142,247,.07));border:1.5px solid rgba(245,158,11,.4);border-radius:12px;padding:18px 20px;margin:16px 0;}
+.presolver .pre-lbl{font-family:'Lora',serif;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.presolver .pre-q{display:flex;gap:10px;margin-bottom:8px;font-size:13.5px;align-items:flex-start;}
+.presolver .pre-num{background:var(--gold);color:#0f1117;font-size:10px;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.presolver .pre-text strong{color:var(--gold);}
+.presolver .pre-hint{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.wbox{background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.35);border-radius:9px;padding:12px 15px;margin:8px 0;}
+.rbox{background:rgba(52,211,153,.08);border:1.5px solid rgba(52,211,153,.35);border-radius:9px;padding:12px 15px;margin:8px 0;}
+.wbox .wl{font-size:10px;font-weight:700;color:var(--red);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.rbox .rl{font-size:10px;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+.axis-law{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0;}
+.al-card{border-radius:9px;padding:13px 15px;text-align:center;}
+.al-card.horiz{background:rgba(79,142,247,.1);border:1.5px solid rgba(79,142,247,.4);}
+.al-card.vert{background:rgba(167,139,250,.1);border:1.5px solid rgba(167,139,250,.4);}
+.al-card .al-axis{font-size:18px;font-family:'Lora',serif;font-weight:700;margin-bottom:5px;}
+.al-card.horiz .al-axis{color:var(--accent2);}
+.al-card.vert .al-axis{color:var(--purple);}
+.al-card .al-var{font-size:13px;font-weight:700;margin:4px 0;}
+.al-card.horiz .al-var{color:var(--accent);}
+.al-card.vert .al-var{color:var(--purple);}
+.al-card .al-why{font-size:11.5px;color:var(--muted);}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:13px 0;}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;}
+.scard .slbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px;}
+.scard.a .slbl{color:var(--accent2);}
+.scard.b .slbl{color:var(--gold);}
+.scard.c .slbl{color:var(--green);}
+.scard.d .slbl{color:var(--purple);}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0;}
+
+/* ═══════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════ */
 hr.dv{border:none;border-top:1px solid var(--border);margin:34px 0;}
 code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--accent2);}
 .katex{color:var(--text);}
 .katex-display>.katex{color:var(--accent2);}
 .katex-display{overflow-x:auto;overflow-y:hidden;}
 
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
 @media(max-width:800px){
-  #sb{display:none;}
-  #main{margin-left:0;padding:20px 16px;}
-  .tc,.tgrid{grid-template-columns:1fr;}
+  #c9-sb,#c10-sb{display:none;}
+  #c9-main,#c10-main{margin-left:0;padding:20px 16px;padding-top:72px;}
+  .tc,.tgrid,.sgrid,.three,.axis-law{grid-template-columns:1fr;}
   .liate{grid-template-columns:36px 110px 1fr;}
   .mr{grid-template-columns:1fr;}
   .mw{border-radius:6px 6px 0 0;}
   .mright{border-radius:0 0 6px 6px;}
+  #chap-selector .sel-brand{display:none;}
 }
 </style>
 </head>
 <body>
 
-<nav id="sb">
+<!-- ═══════════════════════════════════════════
+     CHAPTER SELECTOR BAR
+═══════════════════════════════════════════ -->
+<div id="chap-selector">
+  <span class="sel-brand">H2 Math · YIJC</span>
+  <div class="sel-tabs">
+    <button class="sel-tab active" onclick="switchChapter('c9')" id="tab-c9">
+      <span class="tab-num">9</span>Integration Techniques
+    </button>
+    <button class="sel-tab" onclick="switchChapter('c10')" id="tab-c10">
+      <span class="tab-num">10</span>Applications of Integration
+    </button>
+  </div>
+</div>
+
+<div class="chap-panel active" id="panel-c9">
+
+<nav id="c9-sb">
   <div class="logo"><span>Chapter 9 · H2 Math</span></div>
   <div class="nl">🧭 Start Here</div>
-  <a href="#dec">Decision Tree</a>
-  <a href="#trig">Instant Triggers</a>
+  <a href="#c9-dec">Decision Tree</a>
+  <a href="#c9-trig">Instant Triggers</a>
   <div class="nl">Content</div>
-  <a href="#s1">1. Reverse of Differentiation</a>
-  <a href="#s2">2–3. Standard Forms</a>
-  <a href="#s4">4. Techniques</a>
-  <a href="#s41" class="sub">4.1 f′(x)[f(x)]ⁿ</a>
-  <a href="#s42" class="sub">4.2 f′(x)/f(x)</a>
-  <a href="#s43" class="sub">4.3 f′(x)eᶠ⁽ˣ⁾</a>
-  <a href="#s44" class="sub">4.4 Trig Functions</a>
-  <a href="#s45" class="sub">4.5 Inverse Trig</a>
-  <a href="#s46" class="sub">4.6 Log Forms</a>
-  <a href="#s47" class="sub">4.7 Rational Functions</a>
-  <a href="#s5">5. Substitution</a>
-  <a href="#s6">6. Integration by Parts</a>
-  <a href="#s7">7. Definite Integrals</a>
+  <a href="#c9-s1">1. Reverse of Differentiation</a>
+  <a href="#c9-s2">2–3. Standard Forms</a>
+  <a href="#c9-s4">4. Techniques</a>
+  <a href="#c9-s41" class="sub">4.1 f′(x)[f(x)]ⁿ</a>
+  <a href="#c9-s42" class="sub">4.2 f′(x)/f(x)</a>
+  <a href="#c9-s43" class="sub">4.3 f′(x)eᶠ⁽ˣ⁾</a>
+  <a href="#c9-s44" class="sub">4.4 Trig Functions</a>
+  <a href="#c9-s45" class="sub">4.5 Inverse Trig</a>
+  <a href="#c9-s46" class="sub">4.6 Log Forms</a>
+  <a href="#c9-s47" class="sub">4.7 Rational Functions</a>
+  <a href="#c9-s5">5. Substitution</a>
+  <a href="#c9-s6">6. Integration by Parts</a>
+  <a href="#c9-s7">7. Definite Integrals</a>
   <div class="nl">📋 Reference</div>
-  <a href="#ref">All MF27 Results</a>
-  <a href="#mis">Common Mistakes</a>
+  <a href="#c9-ref">All MF27 Results</a>
+  <a href="#c9-mis">Common Mistakes</a>
 </nav>
 
-<main id="main">
+<main id="c9-main">
 
 <!-- HERO -->
 <div class="hero">
-  <div class="lbl">H2 Mathematics · With input from YIJC 2025 JC1, Min Htut Khaing</div>
+  <div class="lbl">H2 Mathematics · YIJC 2025 JC1</div>
   <h1>Chapter 9<br>Integration Techniques</h1>
   <p>Complete revision notes with decision tree, instant pattern triggers, worked examples per method, trig power strategies, partial fraction types, and exam traps — all verified against lecture notes.</p>
   <div class="pill">✦ Upgraded · exam-ready</div>
 </div>
 
 <!-- ═══════════ DECISION TREE ═══════════ -->
-<section class="sec" id="dec">
+<section class="sec" id="c9-dec">
   <div class="sec-title"><div class="snum gold">🧭</div><h2 class="st">Decision Tree — Which Technique?</h2></div>
   <p class="p">When you see an integral, run through these in order. Stop at the first match.</p>
   <div class="dt">
@@ -250,7 +456,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ INSTANT TRIGGERS ═══════════ -->
-<section class="sec" id="trig">
+<section class="sec" id="c9-trig">
   <div class="sec-title"><div class="snum gold">⚡</div><h2 class="st">Instant Pattern Triggers</h2></div>
   <p class="p">See the pattern → know the method in under 5 seconds.</p>
   <div class="tgrid">
@@ -272,7 +478,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 <hr class="dv">
 
 <!-- ═══════════ SECTION 1 ═══════════ -->
-<section class="sec" id="s1">
+<section class="sec" id="c9-s1">
   <div class="sec-title"><div class="snum">1</div><h2 class="st">Integration as the Reverse of Differentiation</h2></div>
   <div class="fb gold">$$\frac{d}{dx}\big[f(x)\big]=f'(x)\quad\Longrightarrow\quad\int f'(x)\,dx=f(x)+C$$</div>
   <ul class="bl">
@@ -292,7 +498,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ SECTION 2–3 ═══════════ -->
-<section class="sec" id="s2">
+<section class="sec" id="c9-s2">
   <div class="sec-title"><div class="snum">2–3</div><h2 class="st">Standard Forms</h2></div>
 
   <h3 class="sub">(I) Power, Log, Exponential <span class="badge am">A-Math</span></h3>
@@ -323,11 +529,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ SECTION 4 ═══════════ -->
-<section class="sec" id="s4">
+<section class="sec" id="c9-s4">
   <div class="sec-title"><div class="snum">4</div><h2 class="st">Techniques of Integration</h2></div>
 
   <!-- 4.1 -->
-  <h3 class="sub" id="s41">4.1 &nbsp; $\displaystyle\int f'(x)\,[f(x)]^n\,dx$, &nbsp; $n\neq-1$</h3>
+  <h3 class="sub" id="c9-s41">4.1 &nbsp; $\displaystyle\int f'(x)\,[f(x)]^n\,dx$, &nbsp; $n\neq-1$</h3>
   <div class="fb">$$\int f'(x)\,[f(x)]^n\,dx=\frac{[f(x)]^{n+1}}{n+1}+C,\qquad n\neq-1$$</div>
   <p class="p"><strong>Key check:</strong> Is one function the derivative of the other (up to a constant factor)? If yes, introduce the constant and apply directly.</p>
   <div class="tw"><table>
@@ -343,7 +549,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   </table></div>
 
   <!-- 4.2 -->
-  <h3 class="sub" id="s42">4.2 &nbsp; $\displaystyle\int\dfrac{f'(x)}{f(x)}\,dx$ &nbsp; (the $n=-1$ case)</h3>
+  <h3 class="sub" id="c9-s42">4.2 &nbsp; $\displaystyle\int\dfrac{f'(x)}{f(x)}\,dx$ &nbsp; (the $n=-1$ case)</h3>
   <div class="fb green">$$\int\frac{f'(x)}{f(x)}\,dx=\ln|f(x)|+C$$</div>
   <p class="p"><strong>Key check:</strong> Is the numerator the derivative of the denominator? Multiply/divide by a constant to make the ratio exact.</p>
   <div class="tw"><table>
@@ -359,7 +565,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   <div class="nb b"><span class="ni">ℹ</span><span>When denominator is always positive (e.g. $3+2x^2$, $1+e^{-2x}$), write $\ln(\cdots)$ without modulus. When sign is uncertain, keep $\ln|\cdots|$.</span></div>
 
   <!-- 4.3 -->
-  <h3 class="sub" id="s43">4.3 &nbsp; $\displaystyle\int f'(x)\,e^{f(x)}\,dx$</h3>
+  <h3 class="sub" id="c9-s43">4.3 &nbsp; $\displaystyle\int f'(x)\,e^{f(x)}\,dx$</h3>
   <div class="fb purple">$$\int f'(x)\,e^{f(x)}\,dx=e^{f(x)}+C$$</div>
   <div class="tw"><table>
     <thead><tr><th>Integral</th><th>$f(x)$ and check</th><th>Result</th></tr></thead>
@@ -373,7 +579,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   </table></div>
 
   <!-- 4.4 -->
-  <h3 class="sub" id="s44">4.4 &nbsp; Trigonometric Functions</h3>
+  <h3 class="sub" id="c9-s44">4.4 &nbsp; Trigonometric Functions</h3>
 
   <h4 class="ss">4.4.1 — tan, cot, sec, cosec <span class="badge mf">In MF27</span></h4>
   <div class="tw"><table>
@@ -427,12 +633,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   </div>
 
   <!-- 4.5 -->
-  <h3 class="sub" id="s45">4.5 &nbsp; $\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2+x^2}\,dx$ <span class="badge mf">MF27</span></h3>
+  <h3 class="sub" id="c9-s45">4.5 &nbsp; $\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2+x^2}\,dx$ <span class="badge mf">MF27</span></h3>
   <div class="tw"><table>
     <thead><tr><th>Standard Form</th><th>General Form (replace $x$ with $px+q$)</th></tr></thead>
     <tbody>
       <tr>
-        <td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx=\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C,\;\;|x|<a$</td>
+        <td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx=\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C,\;\;|x|\lt a$</td>
         <td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-(px+q)^2}}\,dx=\dfrac{1}{p}\sin^{-1}\!\!\left(\dfrac{px+q}{a}\right)+C$</td>
       </tr>
       <tr>
@@ -452,7 +658,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   </div>
 
   <!-- 4.6 -->
-  <h3 class="sub" id="s46">4.6 &nbsp; $\displaystyle\int\dfrac{1}{x^2-a^2}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$ <span class="badge mf">MF27</span></h3>
+  <h3 class="sub" id="c9-s46">4.6 &nbsp; $\displaystyle\int\dfrac{1}{x^2-a^2}\,dx$ &nbsp; and &nbsp; $\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$ <span class="badge mf">MF27</span></h3>
   <div class="tw"><table>
     <thead><tr><th>Standard Form</th><th>Domain</th><th>General Form</th></tr></thead>
     <tbody>
@@ -463,7 +669,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
       </tr>
       <tr>
         <td>$\displaystyle\int\dfrac{1}{a^2-x^2}\,dx=\dfrac{1}{2a}\ln\!\left|\dfrac{a+x}{a-x}\right|+C$</td>
-        <td>$|x|<a$</td>
+        <td>$|x|\lt a$</td>
         <td>$\displaystyle\int\dfrac{1}{a^2-(px+q)^2}\,dx=\dfrac{1}{2ap}\ln\!\left|\dfrac{a+(px+q)}{a-(px+q)}\right|+C$</td>
       </tr>
     </tbody>
@@ -479,7 +685,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
   </div>
 
   <!-- 4.7 -->
-  <h3 class="sub" id="s47">4.7 &nbsp; Rational Functions $\displaystyle\int\dfrac{g(x)}{f(x)}\,dx$</h3>
+  <h3 class="sub" id="c9-s47">4.7 &nbsp; Rational Functions $\displaystyle\int\dfrac{g(x)}{f(x)}\,dx$</h3>
   <div class="flow">
     <div class="fs"><div class="sl">Step 1 — Proper or improper?</div>If $\deg(g)\geq\deg(f)$: perform long division or juggling to write as polynomial + proper fraction. Integrate polynomial terms directly.</div>
     <div class="arr">↓</div>
@@ -521,7 +727,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ SECTION 5 ═══════════ -->
-<section class="sec" id="s5">
+<section class="sec" id="c9-s5">
   <div class="sec-title"><div class="snum">5</div><h2 class="st">Integration by Substitution</h2></div>
   <div class="nb b"><span class="ni">ℹ</span><span>The substitution <strong>will always be given</strong> in exam questions when this method is required.</span></div>
   <h3 class="sub">Procedure</h3>
@@ -561,7 +767,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ SECTION 6 ═══════════ -->
-<section class="sec" id="s6">
+<section class="sec" id="c9-s6">
   <div class="sec-title"><div class="snum">6</div><h2 class="st">Integration by Parts (IBP)</h2></div>
   <div class="fb gold">$$\int u\,\frac{dv}{dx}\,dx=uv-\int v\,\frac{du}{dx}\,dx$$</div>
 
@@ -622,7 +828,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ SECTION 7 ═══════════ -->
-<section class="sec" id="s7">
+<section class="sec" id="c9-s7">
   <div class="sec-title"><div class="snum">7</div><h2 class="st">Definite Integrals</h2></div>
   <div class="fb">$$\int_a^b f(x)\,dx=\big[F(x)\big]_a^b=F(b)-F(a),\qquad F'(x)=f(x)$$</div>
   <div class="nb b"><span class="ni">ℹ</span><span>$C$ cancels in definite integrals — do not write it in working.</span></div>
@@ -668,15 +874,15 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ REFERENCE ═══════════ -->
-<section class="sec" id="ref">
+<section class="sec" id="c9-ref">
   <div class="sec-title"><div class="snum gold">★</div><h2 class="st">All MF27 Results — This Chapter</h2></div>
   <div class="tw"><table>
     <thead><tr><th>Integral</th><th>Result</th><th>Condition</th></tr></thead>
     <tbody>
-      <tr><td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$</td><td>$\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td><td>$|x|<a$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{\sqrt{a^2-x^2}}\,dx$</td><td>$\sin^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td><td>$|x|\lt a$</td></tr>
       <tr><td>$\displaystyle\int\dfrac{1}{a^2+x^2}\,dx$</td><td>$\dfrac{1}{a}\tan^{-1}\!\!\left(\dfrac{x}{a}\right)+C$</td><td>all $x$</td></tr>
       <tr><td>$\displaystyle\int\dfrac{1}{x^2-a^2}\,dx$</td><td>$\dfrac{1}{2a}\ln\!\left|\dfrac{x-a}{x+a}\right|+C$</td><td>$x>a$</td></tr>
-      <tr><td>$\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$</td><td>$\dfrac{1}{2a}\ln\!\left|\dfrac{a+x}{a-x}\right|+C$</td><td>$|x|<a$</td></tr>
+      <tr><td>$\displaystyle\int\dfrac{1}{a^2-x^2}\,dx$</td><td>$\dfrac{1}{2a}\ln\!\left|\dfrac{a+x}{a-x}\right|+C$</td><td>$|x|\lt a$</td></tr>
       <tr><td>$\int\tan x\,dx$</td><td>$\ln|\sec x|+C$</td><td>$|x|<\frac{\pi}{2}$</td></tr>
       <tr><td>$\int\cot x\,dx$</td><td>$\ln|\sin x|+C$</td><td>$0<x<\pi$</td></tr>
       <tr><td>$\int\sec x\,dx$</td><td>$\ln|\sec x+\tan x|+C$</td><td>$|x|<\frac{\pi}{2}$</td></tr>
@@ -708,7 +914,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 </section>
 
 <!-- ═══════════ COMMON MISTAKES ═══════════ -->
-<section class="sec" id="mis">
+<section class="sec" id="c9-mis">
   <div class="sec-title"><div class="snum red">✗</div><h2 class="st">Common Mistakes — Wrong vs Right</h2></div>
   <p class="p">The most penalised errors. Each pair shows the mistake and the correct form.</p>
 
@@ -756,11 +962,766 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--bg3)
 
 </main>
 
+
+</div>
+<div class="chap-panel" id="panel-c10">
+
+<nav id="c10-sb">
+  <div class="logo"><span>Chapter 10 · H2 Math</span></div>
+  <div class="nl">⚡ Pre-Solve</div>
+  <a href="#c10-presolve">5-Q Exam Trap Check</a>
+  <div class="nl">🧭 Quick Reference</div>
+  <a href="#c10-quick">Area & Volume Formulas</a>
+  <a href="#c10-dec">Decision Tree</a>
+  <div class="nl">Content</div>
+  <a href="#c10-s1">1. Definite Integral as Limit of Sum</a>
+  <a href="#c10-s2">2. Area of a Region</a>
+  <a href="#c10-s21" class="sub">2.1 Curve & x-axis</a>
+  <a href="#c10-s22" class="sub">2.2 Curve & y-axis</a>
+  <a href="#c10-s23" class="sub">2.3 Curve & a Line</a>
+  <a href="#c10-s24" class="sub">2.4 Between Two Curves</a>
+  <a href="#c10-s25" class="sub">2.5 Modulus Integrands</a>
+  <a href="#c10-s3">3. Volume of Revolution</a>
+  <a href="#c10-s31" class="sub">3.1 About the x-axis</a>
+  <a href="#c10-s32" class="sub">3.2 About the y-axis</a>
+  <a href="#c10-s33" class="sub">3.3 Two Curves</a>
+  <a href="#c10-s34" class="sub">3.4 Composite Solids</a>
+  <a href="#c10-s35" class="sub">3.5 Parallel-Axis Rotation</a>
+  <div class="nl">📋 Reference</div>
+  <a href="#c10-mis">Common Mistakes</a>
+  <a href="#c10-tips">Exam Tips</a>
+</nav>
+
+<main id="c10-main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="lbl">H2 Mathematics · YIJC 2024 JC2</div>
+  <h1>Chapter 10<br>Applications of Integration</h1>
+  <p>Complete revision notes covering definite integral as a limit of sum, area calculations (x-axis, y-axis, two curves, modulus), and volumes of revolution — including composite solids and parallel-axis rotation.</p>
+  <div class="pill">✦ A* Upgraded · Examiner-Proof</div>
+</div>
+
+<!-- ═══════════ PRE-SOLVE CHECKLIST ═══════════ -->
+<section class="sec" id="c10-presolve">
+  <div class="sec-title"><div class="snum gold">⚡</div><h2 class="st">Pre-Solve Checklist — Run This Before Every Question</h2></div>
+  <p class="p">Before you write a single integral, answer these 5 questions. They take 15 seconds and eliminate the most common mark losses.</p>
+
+  <div class="presolver">
+    <div class="pre-lbl">⚠️ 5-Question Exam Trap Check</div>
+    <div class="pre-q">
+      <div class="pre-num">1</div>
+      <div><strong class="pre-text">Exact or Numerical?</strong><div class="pre-hint">Keyword "exact" → algebraic working required, no GC for evaluation. Keyword "numerical value" → GC allowed. Keyword "show that" → work must justify the given answer.</div></div>
+    </div>
+    <div class="pre-q">
+      <div class="pre-num">2</div>
+      <div><strong class="pre-text">$dx$ or $dy$? — Which is forced, and which is easier?</strong><div class="pre-hint">Rotation about horizontal axis ($y=k$) → MUST use $dx$. Rotation about vertical axis ($x=h$) → MUST use $dy$. For area, choose the variable that avoids splitting the region.</div></div>
+    </div>
+    <div class="pre-q">
+      <div class="pre-num">3</div>
+      <div><strong class="pre-text">Do I need to split the region?</strong><div class="pre-hint">Does the curve cross the x-axis (or y-axis) within the interval? Does it change from above to below? If yes → split at the crossing point and use separate integrals.</div></div>
+    </div>
+    <div class="pre-q">
+      <div class="pre-num">4</div>
+      <div><strong class="pre-text">Is this a disguised definite integral?</strong><div class="pre-hint">Limit-of-sum question? Factor out $\frac{1}{n}$, identify $f(r/n)$, and convert to $\int_0^1 f(x)\,dx$. Don't mistake the Riemann sum for an unrelated expression.</div></div>
+    </div>
+    <div class="pre-q">
+      <div class="pre-num">5</div>
+      <div><strong class="pre-text">Is there a hidden trap?</strong><div class="pre-hint">Washer method: square each radius first, then subtract — never $(y_1-y_2)^2$. Axis shift: radius = distance to axis, sign does not matter (squaring kills it). Modulus: split at zeros of $f(x)$, negate where $f(x)<0$.</div></div>
+    </div>
+  </div>
+
+  <div class="nb y"><span class="ni">💡</span><span>This checklist is most useful in the first 30 seconds of reading a question. The traps are not random — they are the same 5 concepts examiners test year after year.</span></div>
+</section>
+
+<!-- ═══════════ QUICK REFERENCE ═══════════ -->
+<section class="sec" id="c10-quick">
+  <div class="sec-title"><div class="snum gold">📐</div><h2 class="st">Quick Reference — All Key Formulas</h2></div>
+  <p class="p">Everything you need on one screen. All angles in radians. All areas in units², all volumes in units³.</p>
+
+  <h3 class="sub">Area Formulas</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Region Bounded By</th><th>Formula</th><th>Condition</th></tr></thead>
+    <tbody>
+      <tr><td>Curve $y=f(x)$, x-axis, $x=a$, $x=b$ — <strong>above</strong> x-axis</td><td>$\displaystyle A=\int_a^b y\,dx=\int_a^b f(x)\,dx$</td><td>$f(x)\ge 0$</td></tr>
+      <tr><td>Curve $y=f(x)$, x-axis, $x=a$, $x=b$ — <strong>below</strong> x-axis</td><td>$\displaystyle A=-\int_a^b y\,dx=-\int_a^b f(x)\,dx$</td><td>$f(x)\le 0$</td></tr>
+      <tr><td>Curve $x=g(y)$, y-axis, $y=p$, $y=q$ — <strong>right</strong> of y-axis</td><td>$\displaystyle A=\int_p^q x\,dy=\int_p^q g(y)\,dy$</td><td>$g(y)\ge 0$</td></tr>
+      <tr><td>Curve $x=g(y)$, y-axis, $y=p$, $y=q$ — <strong>left</strong> of y-axis</td><td>$\displaystyle A=-\int_p^q x\,dy=-\int_p^q g(y)\,dy$</td><td>$g(y)\le 0$</td></tr>
+      <tr><td>Between two curves $y=f(x)$ (upper) and $y=g(x)$ (lower)</td><td>$\displaystyle A=\int_a^b\bigl(f(x)-g(x)\bigr)\,dx$</td><td>$f(x)\ge g(x)$ on $[a,b]$</td></tr>
+      <tr><td>Between two curves $x=f(y)$ (right) and $x=g(y)$ (left)</td><td>$\displaystyle A=\int_p^q\bigl(f(y)-g(y)\bigr)\,dy$</td><td>$f(y)\ge g(y)$ on $[p,q]$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Volume of Revolution Formulas</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Region / Axis</th><th>Formula</th></tr></thead>
+    <tbody>
+      <tr><td>Bounded by $y=f(x)$, x-axis, $x=a$, $x=b$ → rotated about <strong>x-axis</strong></td><td>$\displaystyle V=\pi\int_a^b y^2\,dx=\pi\int_a^b[f(x)]^2\,dx$</td></tr>
+      <tr><td>Bounded by $x=g(y)$, y-axis, $y=p$, $y=q$ → rotated about <strong>y-axis</strong></td><td>$\displaystyle V=\pi\int_p^q x^2\,dy=\pi\int_p^q[g(y)]^2\,dy$</td></tr>
+      <tr><td>Between two curves → rotated about x-axis (or y-axis)</td><td>$V=V_{\text{larger}}-V_{\text{smaller}}$</td></tr>
+      <tr><td>Rotation about line $y=k$ (parallel to x-axis)</td><td>Replace $y$ with $y-k$ in formula: $V=\pi\int_a^b(y-k)^2\,dx$</td></tr>
+      <tr><td>Rotation about line $x=h$ (parallel to y-axis)</td><td>Replace $x$ with $x-h$ in formula: $V=\pi\int_p^q(x-h)^2\,dy$</td></tr>
+      <tr><td>Cone (triangle rotated 360° about axis)</td><td>$V=\dfrac{1}{3}\pi r^2 h$</td></tr>
+      <tr><td>Cylinder (rectangle rotated 360° about axis)</td><td>$V=\pi r^2 h$</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="nb r"><span class="ni">⚠</span><span><strong>Critical:</strong> These formulas give correct results ONLY when the axis of rotation is the x-axis or y-axis (not a parallel line). For parallel axes, translate the curve first.</span></div>
+</section>
+
+<!-- ═══════════ DECISION TREE ═══════════ -->
+<section class="sec" id="c10-dec">
+  <div class="sec-title"><div class="snum gold">🧭</div><h2 class="st">Decision Tree — Area or Volume?</h2></div>
+  <p class="p">Run through these questions when you see an application problem. Stop at the first match.</p>
+
+  <div class="dt">
+    <div class="dtq">Q1 — Is the problem asking for an <em>area</em>?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Area</span>↓ Proceed to Q2</div>
+      <div class="dn"><span class="tg">✗ Volume</span>↓ Jump to Q5 (Volume)</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Q2 — Is the region bounded with respect to the x-axis or y-axis?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">x-axis</span>Use $\displaystyle\int_a^b f(x)\,dx$ (or $-\int$ if below axis). Always sketch first.</div>
+      <div class="dn"><span class="tg">y-axis</span>Express $x$ in terms of $y$, use $\displaystyle\int_p^q g(y)\,dy$.</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Q3 — Does the region cross the axis (partly above, partly below)?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>Split at crossing point. Use <strong>separate</strong> integrals for each sub-region.</div>
+      <div class="dn"><span class="tg">✗ No</span>Single integral. Insert $-$ sign if region is below x-axis (or left of y-axis).</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Q4 — Two curves bounding the region?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>$A=\int(\text{upper}-\text{lower})\,dx$ or $\int(\text{right}-\text{left})\,dy$. Find intersections first.</div>
+      <div class="dn"><span class="tg">✗ No</span>Single-curve formula. Done.</div>
+    </div>
+    <div class="dc">— — — Volume path — — —</div>
+    <div class="dtq">Q5 — What is the axis of rotation?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">x-axis or y-axis</span>Apply $\pi\int y^2\,dx$ or $\pi\int x^2\,dy$ directly. Use subtraction for two-curve regions.</div>
+      <div class="dn"><span class="tg">Parallel to axis (e.g. y = k)</span>Translate curve by $k$: replace $y$ with $y-k$ (or $x$ with $x-h$), then apply standard formula.</div>
+    </div>
+    <div class="dc">↓</div>
+    <div class="dtq">Q6 — Is the solid a composite (two different boundary curves)?</div>
+    <div class="dtr">
+      <div class="dy"><span class="tg">✓ Yes</span>$V_{\text{total}}=V_{\text{larger}}-V_{\text{smaller}}$. Or sum constituent solids.</div>
+      <div class="dn"><span class="tg">✗ No</span>Single integral. Done.</div>
+    </div>
+  </div>
+  <div class="nb y"><span class="ni">💡</span><span><strong>Golden rule:</strong> Always sketch the region before integrating. Without the sketch, you cannot determine: sign of integral, limits of integration, which curve is upper/lower, and whether the region crosses any axis.</span></div>
+</section>
+
+<!-- ═══════════ SECTION 1 ═══════════ -->
+<section class="sec" id="c10-s1">
+  <div class="sec-title"><div class="snum">1</div><h2 class="st">Definite Integral as a Limit of Sum</h2></div>
+
+  <p class="p">The key insight: slicing a region into infinitely thin rectangular strips and summing their areas in the limit gives an exact area, expressed as a definite integral.</p>
+
+  <h3 class="sub">Conceptual Development</h3>
+  <p class="p">Consider the area bounded by $y=f(x)$, the x-axis, $x=a$ and $x=b$. Divide $[a,b]$ into strips of width $\delta x$. Each strip has approximate area $\delta A \approx y\cdot\delta x$.</p>
+
+  <div class="fb">$$A=\lim_{\delta x\to 0}\sum_{x=a}^{b}y(\delta x)=\int_a^b f(x)\,dx$$</div>
+
+  <div class="nb b"><span class="ni">ℹ</span><span>The thinner the strips ($\delta x\to 0$), the better the approximation — in the limit, the sum of rectangle areas equals the exact area. This is why the definite integral is defined as a <strong>limit of a sum</strong>.</span></div>
+
+  <h3 class="sub">Volume Analogue</h3>
+  <p class="p">The same idea extends to volumes: slice the solid into thin circular discs of radius $y$ and thickness $\delta x$. Each disc has volume $\approx \pi y^2 \delta x$, giving:</p>
+  <div class="fb purple">$$V=\lim_{\delta x\to 0}\sum_{x=a}^{b}\pi y^2(\delta x)=\pi\int_a^b y^2\,dx$$</div>
+
+  <h3 class="sub">Limit-of-Sum Problems (Exam Type)</h3>
+  <p class="p">These questions ask you to recognise a Riemann sum as a definite integral and evaluate it.</p>
+
+  <div class="pattern">
+    <div class="pat-lbl">🧩 Reverse Detection Mode — "I don't see $\frac{1}{n}$ — what do I do?"</div>
+    <p class="p" style="margin:0 0 8px">Examiners often present sums that don't immediately look like $\frac{1}{n}\sum f(\frac{r}{n})$. The fix: <strong>force it into that form by factoring</strong>.</p>
+    <div class="fb purple" style="margin:8px 0;">$$\sum_{r=1}^{n}\frac{r}{n^2+r^2}=\sum_{r=1}^{n}\frac{r/n^2}{1+(r/n)^2}=\frac{1}{n}\sum_{r=1}^{n}\frac{r/n}{1+(r/n)^2}\;\xrightarrow{n\to\infty}\;\int_0^1\frac{x}{1+x^2}\,dx$$</div>
+    <ol class="st" style="margin:8px 0 0;">
+      <li>Look for $r/n$ in the expression — this will become $x$.</li>
+      <li>Factor out $\frac{1}{n}$ to isolate the strip width.</li>
+      <li>Identify $f(r/n)$ — replace every $r/n$ with $x$ to get $f(x)$.</li>
+      <li>Write the limit as $\int_0^1 f(x)\,dx$ and evaluate.</li>
+    </ol>
+  </div>
+
+  <div class="flow">
+    <div class="fs"><div class="sl">Step 1 — Identify the structure</div>Write the sum in the form $\displaystyle\frac{1}{n}\sum_{r=1}^{n}f\!\left(\frac{r}{n}\right)$ where the width of each strip is $\frac{1}{n}$ and the height is $f\!\left(\frac{r}{n}\right)$.</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 2 — Map to integral</div>As $n\to\infty$, this sum $\to\displaystyle\int_0^1 f(x)\,dx$. (Width $\frac{1}{n}\to dx$, height at $\frac{r}{n}\to f(x)$ at $x=\frac{r}{n}$.)</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 3 — Evaluate the definite integral</div>Compute $\displaystyle\int_0^1 f(x)\,dx$ using standard techniques from Chapter 9.</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 1 — [N2001/I/18 part]</div>
+    <p class="p"><strong>(i)</strong> Find the exact value of $\displaystyle\int_0^1\frac{1}{1+x^2}\,dx$.</p>
+    <p class="p"><strong>(ii)</strong> Show that the total area $A$ of $n$ rectangles of width $\frac{1}{n}$ drawn under $y=\frac{1}{1+x^2}$ for $0\le x\le 1$ is:</p>
+    <div class="fb">$$A=\frac{1}{n}\left\{\frac{1}{1+\!\left(\frac{1}{n}\right)^{\!2}}+\frac{1}{1+\!\left(\frac{2}{n}\right)^{\!2}}+\cdots+\frac{1}{2}\right\}$$</div>
+    <p class="p">State the limit of $A$ as $n\to\infty$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p"><strong>Solution (i):</strong></p>
+    <div class="fb">$$\int_0^1\frac{1}{1+x^2}\,dx=\left[\tan^{-1}x\right]_0^1=\tan^{-1}1-\tan^{-1}0=\frac{\pi}{4}-0=\frac{\pi}{4}$$</div>
+    <p class="p"><strong>Solution (ii):</strong> Width of each rectangle $=\frac{1}{n}$.</p>
+    <p class="p">Height of $r$th rectangle $=f\!\left(\frac{r}{n}\right)=\dfrac{1}{1+\left(\frac{r}{n}\right)^2}$, for $r=1,2,\ldots,n$.</p>
+    <div class="fb">$$A=\frac{1}{n}\left(\frac{1}{1+\left(\frac{1}{n}\right)^2}+\frac{1}{1+\left(\frac{2}{n}\right)^2}+\cdots+\frac{1}{1+\left(\frac{n}{n}\right)^2}\right)=\frac{1}{n}\left\{\frac{1}{1+\!\left(\frac{1}{n}\right)^2}+\cdots+\frac{1}{2}\right\}\quad\text{(shown)}$$</div>
+    <p class="p">As $n\to\infty$: $A\to\displaystyle\int_0^1\frac{1}{1+x^2}\,dx=\dfrac{\pi}{4}$.</p>
+    <div class="nb b" style="margin-top:8px"><span class="ni">ℹ</span><span>The last term when $r=n$ gives $\frac{1}{1+(n/n)^2}=\frac{1}{1+1}=\frac{1}{2}$. As $n\to\infty$, the number of rectangles increases and the width of each decreases, so the sum approaches the exact area.</span></div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example — [N2015/I/Q3]</div>
+    <p class="p">Evaluate $\displaystyle\lim_{n\to\infty}\frac{1}{n}\left(\frac{\sqrt[3]{1}+\sqrt[3]{2}+\cdots+\sqrt[3]{n}}{\sqrt[3]{n}}\right)$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p"><strong>Solution:</strong> Rewrite as:</p>
+    <div class="fb">$$\lim_{n\to\infty}\frac{1}{n}\sum_{r=1}^{n}\frac{\sqrt[3]{r}}{\sqrt[3]{n}}=\lim_{n\to\infty}\frac{1}{n}\sum_{r=1}^{n}\left(\frac{r}{n}\right)^{1/3}=\int_0^1 x^{1/3}\,dx=\left[\frac{x^{4/3}}{4/3}\right]_0^1=\frac{3}{4}$$</div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 2 ═══════════ -->
+<section class="sec" id="c10-s2">
+  <div class="sec-title"><div class="snum">2</div><h2 class="st">Using Definite Integrals to Find Area</h2></div>
+  <p class="p">The fundamental process: <strong>sketch → identify sign → set up integral → evaluate</strong>. Never skip the sketch.</p>
+
+  <!-- 2.1 -->
+  <h3 class="sub" id="c10-s21">2.1 Area Bounded by a Curve and the x-axis</h3>
+
+  <h4 class="ss">Region above the x-axis [$f(x) \ge 0$]</h4>
+  <div class="fb">$$A=\int_a^b y\,dx=\int_a^b f(x)\,dx$$</div>
+  <p class="p">Each vertical rectangular strip has area $y\cdot\delta x > 0$, so the integral is positive.</p>
+
+  <h4 class="ss">Region below the x-axis [$f(x) \le 0$]</h4>
+  <div class="fb red">$$A=-\int_a^b y\,dx=-\int_a^b f(x)\,dx$$</div>
+  <p class="p">The integral $\int_a^b f(x)\,dx$ is <em>negative</em> when $f(x)\le 0$ (each strip has height $-y>0$). The negative sign in front converts it to a positive area.</p>
+
+  <div class="nb r"><span class="ni">⚠</span><span><strong>Mixed regions (partly above, partly below x-axis):</strong> You MUST split the integral at the x-intercept(s). Do NOT try to compute a single integral over the entire range — you will get cancellation, not total area.</span></div>
+  <div class="fb gold">$$\text{Total area} = \int_a^c f(x)\,dx + \left(-\int_c^b f(x)\,dx\right)$$</div>
+  <p class="p">where $c$ is the x-value where $f(c)=0$ between $a$ and $b$.</p>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 2</div>
+    <p class="p">Find the exact area bounded by $y=x^2+1$, the lines $x=1$, $x=3$, and the x-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Since $y=x^2+1>0$ for all $x$, the region is entirely above the x-axis.</p>
+    <div class="fb">$$A=\int_1^3(x^2+1)\,dx=\left[\frac{x^3}{3}+x\right]_1^3=\left(\frac{27}{3}+3\right)-\left(\frac{1}{3}+1\right)=10+3-\frac{1}{3}-1=\frac{32}{3}\text{ units}^2$$</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 3</div>
+    <p class="p">Find the area of the region bounded by the x-axis and the curve $y=(x-1)(x-4)$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">The curve crosses the x-axis at $x=1$ and $x=4$. For $1\le x\le 4$, $(x-1)(x-4)\le 0$ (region is below x-axis).</p>
+    <div class="fb">$$A=-\int_1^4(x-1)(x-4)\,dx=-\int_1^4(x^2-5x+4)\,dx=-\left[\frac{x^3}{3}-\frac{5x^2}{2}+4x\right]_1^4=\frac{9}{2}\text{ units}^2$$</div>
+    <div class="nb y" style="margin-top:6px"><span class="ni">💡</span><span>A GC will give $-4.5$ for $\int_1^4(x-1)(x-4)dx$. The area is $+4.5=\frac{9}{2}$ units². The GC value is the signed area; always take the absolute value for the geometric area when below the axis.</span></div>
+  </div>
+
+  <!-- 2.2 -->
+  <h3 class="sub" id="c10-s22">2.2 Area Bounded by a Curve and the y-axis</h3>
+  <p class="p">Instead of vertical strips (width $\delta x$), we use <strong>horizontal strips</strong> (height $\delta y$). Express $x$ as a function of $y$, then integrate with respect to $y$.</p>
+
+  <h4 class="ss">Region right of y-axis [$g(y) \ge 0$]</h4>
+  <div class="fb">$$A=\int_p^q x\,dy=\int_p^q g(y)\,dy$$</div>
+
+  <h4 class="ss">Region left of y-axis [$g(y) \le 0$]</h4>
+  <div class="fb red">$$A=-\int_p^q x\,dy=-\int_p^q g(y)\,dy$$</div>
+
+  <div class="nb b"><span class="ni">ℹ</span><span><strong>Key step:</strong> Rearrange the curve equation to get $x$ in terms of $y$ before integrating. The limits $p$ and $q$ are y-values, not x-values.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 5</div>
+    <p class="p">Find the area of the finite region enclosed by the parabola $y^2=4-x$ and the y-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">When $x=0$: $y=\pm 2$. Express $x$ in terms of $y$: $x=4-y^2$. Since $x\ge 0$ for the region between the curve and y-axis:</p>
+    <div class="fb">$$A=\int_{-2}^{2}x\,dy=\int_{-2}^{2}(4-y^2)\,dy=\left[4y-\frac{y^3}{3}\right]_{-2}^{2}=\left(8-\frac{8}{3}\right)-\left(-8+\frac{8}{3}\right)=\frac{32}{3}\text{ units}^2$$</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 6</div>
+    <p class="p">Find the exact area of the region enclosed by $y=3-\dfrac{1}{x+1}$, the y-axis, and the lines $y=-1$ and $y=\dfrac{5}{2}$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Rearrange: $x=\dfrac{1}{3-y}-1$. Note the curve has vertical asymptote at $x=-1$. The region is partly to the left ($x\le 0$ for $y\le 2$) and partly to the right ($x\ge 0$ for $2\le y\le\frac{5}{2}$) of the y-axis.</p>
+    <div class="fb">$$A=-\int_{-1}^{2}x\,dy+\int_{2}^{5/2}x\,dy=-\int_{-1}^{2}\!\!\left(\frac{1}{3-y}-1\right)dy+\int_{2}^{5/2}\!\!\left(\frac{1}{3-y}-1\right)dy$$</div>
+    <div class="fb">$$=\left[-\ln|3-y|-y\right]_{-1}^{2}\cdot(-1)+\left[-\ln|3-y|-y\right]_{2}^{5/2}\cdot(1)=\frac{5}{2}-\ln 2\text{ units}^2$$</div>
+    <div class="nb r" style="margin-top:6px"><span class="ni">⚠</span><span>Always check whether the region crosses the y-axis (i.e. whether $x=g(y)$ changes sign within the interval). If it does, split the integral at the y-value where $g(y)=0$.</span></div>
+  </div>
+
+  <!-- 2.3 -->
+  <h3 class="sub" id="c10-s23">2.3 Area Bounded by a Curve and a Line</h3>
+  <p class="p">When a region is bounded by both a curve and a line, it is sometimes easier to integrate with respect to $y$ (horizontal strips). Split the region into sub-regions as needed.</p>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 7</div>
+    <p class="p">The region $R$ in the first quadrant is bounded by $y=\dfrac{4}{x}$, the lines $y=2x$, $x=0$ and $y=4$. Find the exact area of $R$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Find intersection of $y=\frac{4}{x}$ and $y=2x$: $\frac{4}{x}=2x\Rightarrow x^2=2\Rightarrow x=\sqrt{2}$ (since $x>0$), so $y=2\sqrt{2}$.</p>
+    <p class="p">Split $R$ into $R_1$ (bounded above by $y=4$, right by $y=\frac{4}{x}$) and $R_2$ (triangle bounded by $y=2x$, $y=2\sqrt{2}$, and x-axis region). Integrate w.r.t. $y$:</p>
+    <div class="fb">$$A=\int_{2\sqrt{2}}^{4}x\,dy+\text{Area of triangle}=\int_{2\sqrt{2}}^{4}\frac{4}{y}\,dy+\frac{1}{2}(\sqrt{2})(2\sqrt{2})$$</div>
+    <div class="fb">$$=\left[4\ln|y|\right]_{2\sqrt{2}}^{4}+2=4(\ln 4-\ln 2\sqrt{2})+2=4\ln\!\left(\frac{4}{2\sqrt{2}}\right)+2=4\ln\sqrt{2}+2=2\ln 2+2\text{ units}^2$$</div>
+  </div>
+
+  <!-- 2.4 -->
+  <h3 class="sub" id="c10-s24">2.4 Area Bounded by Two Curves</h3>
+
+  <h4 class="ss">2.4.1 — Two curves $y = f(x)$ and $y = g(x)$</h4>
+  <p class="p">In <strong>all three cases</strong> (region above x-axis, below x-axis, crossing x-axis), the formula is the same:</p>
+  <div class="fb gold">$$A=\int_a^b\bigl(f(x)-g(x)\bigr)\,dx\qquad\text{where }f(x)\ge g(x)\text{ on }[a,b]$$</div>
+  <p class="p">Think of the integrand as <strong>(upper curve) − (lower curve)</strong>. This works regardless of whether the region is above or below the x-axis.</p>
+
+  <div class="nb b"><span class="ni">ℹ</span><span>To find $a$ and $b$: set $f(x)=g(x)$ and solve for the x-coordinates of the intersection points.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 8</div>
+    <p class="p">Find the area bounded by $y=(2x+1)(x+3)$ and $y=e^{x/2}$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Use GC to find intersection x-coordinates: $x\approx -3.0429$ or $x\approx -0.3414$.</p>
+    <p class="p">On this interval, $e^{x/2}$ is the upper curve.</p>
+    <div class="fb">$$A=\int_{-3.0429}^{-0.3414}\left(e^{x/2}-(2x+1)(x+3)\right)dx\approx 6.39\text{ units}^2$$</div>
+    <div class="nb y" style="margin-top:6px"><span class="ni">💡</span><span>When no exact answer is required, use GC. Intermediate values (intersection x-coords) should be given to at least 5 s.f.</span></div>
+  </div>
+
+  <div class="ex">
+    <div class="exl g">Try This!</div>
+    <p class="p">Using a non-calculator method, find the area of the region bounded by $y=5x-x^2$ and $y=\dfrac{1}{2}x$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Set equal: $5x-x^2=\frac{1}{2}x\Rightarrow x(9-2x)=0\Rightarrow x=0$ or $x=\frac{9}{2}$.</p>
+    <p class="p">On $[0,\frac{9}{2}]$, upper curve is $y=5x-x^2$, lower is $y=\frac{1}{2}x$:</p>
+    <div class="fb">$$A=\int_0^{9/2}\!\!\left(5x-x^2-\frac{x}{2}\right)dx=\int_0^{9/2}\!\!\left(\frac{9x}{2}-x^2\right)dx=\left[\frac{9x^2}{4}-\frac{x^3}{3}\right]_0^{9/2}=\frac{243}{16}\text{ units}^2$$</div>
+  </div>
+
+  <h4 class="ss">2.4.2 — Two curves $x = f(y)$ and $x = g(y)$</h4>
+  <p class="p">Integrate with respect to $y$. In all three cases (right of y-axis, left of y-axis, crossing y-axis), the formula is:</p>
+  <div class="fb gold">$$A=\int_p^q\bigl(f(y)-g(y)\bigr)\,dy\qquad\text{where }f(y)\ge g(y)\text{ (right-most minus left-most)}$$</div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 9</div>
+    <p class="p">Find the exact area of the region bounded by $y=x^2$, $y=3x^2$, and the lines $y=1$ and $y=4$ in the first quadrant.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Express $x$ in terms of $y$ (first quadrant, $x>0$): from $y=x^2$, $x=\sqrt{y}$; from $y=3x^2$, $x=\sqrt{y/3}$.</p>
+    <p class="p">Right-most curve: $x=\sqrt{y}$. Left-most: $x=\sqrt{y/3}$.</p>
+    <div class="fb">$$A=\int_1^4\!\!\left(\sqrt{y}-\sqrt{\frac{y}{3}}\right)dy=\left(1-\frac{1}{\sqrt{3}}\right)\int_1^4\sqrt{y}\,dy=\left(1-\frac{1}{\sqrt{3}}\right)\cdot\frac{14}{3}=\frac{14}{3}\!\left(1-\frac{1}{\sqrt{3}}\right)\text{ units}^2$$</div>
+  </div>
+
+  <!-- 2.5 -->
+  <h3 class="sub" id="c10-s25">2.5 Definite Integrals Involving Modulus Sign</h3>
+  <p class="p">When the integrand contains $|f(x)|$, you <strong>cannot</strong> integrate directly. You must remove the modulus by splitting the range of integration.</p>
+
+  <div class="flow">
+    <div class="fs"><div class="sl">Step 1</div>Find where $f(x)=0$ in the interval $[a,b]$. These are the split points.</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 2</div>Determine the sign of $f(x)$ on each sub-interval (sketch the curve $y=f(x)$ or solve inequality).</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 3 — Replace the modulus</div>On sub-intervals where $f(x)\ge 0$: $|f(x)|=f(x)$. On sub-intervals where $f(x)<0$: $|f(x)|=-f(x)$.</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">Step 4</div>Integrate each piece separately and add the results.</div>
+  </div>
+
+  <div class="nb r"><span class="ni">⚠</span><span><strong>This is a "without GC" technique.</strong> Questions that say "without a GC" or "exact value" involving $|f(x)|$ require this method. GC gives a numerical answer but not the exact form.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 11</div>
+    <p class="p">Find the exact value of $\displaystyle\int_0^{\sqrt{2}}|x^2+2x-3|\,dx$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Find zeros: $x^2+2x-3=(x+3)(x-1)=0\Rightarrow x=-3$ or $x=1$. In $[0,\sqrt{2}]$, the split is at $x=1$.</p>
+    <p class="p">Sign check: for $0\le x<1$, $(x+3)(x-1)<0$ (curve below x-axis). For $1<x\le\sqrt{2}$, $(x+3)(x-1)>0$.</p>
+    <div class="fb">$$\int_0^{\sqrt{2}}|x^2+2x-3|\,dx=\int_0^1-(x^2+2x-3)\,dx+\int_1^{\sqrt{2}}(x^2+2x-3)\,dx$$</div>
+    <div class="fb">$$=-\left[\frac{x^3}{3}+x^2-3x\right]_0^1+\left[\frac{x^3}{3}+x^2-3x\right]_1^{\sqrt{2}}=\frac{5}{3}+\left(\frac{2\sqrt{2}}{3}+2-3\sqrt{2}-\frac{1}{3}-1+3\right)=\frac{16}{3}-\frac{7\sqrt{2}}{3}$$</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl g">Try This!</div>
+    <p class="p">Find the exact value of $\displaystyle\int_{-\pi/4}^{\pi}|\sin x|\,dx$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">$\sin x=0$ at $x=0$ in $[-\pi/4,\pi]$. For $-\pi/4\le x<0$: $\sin x<0$. For $0<x\le\pi$: $\sin x\ge 0$.</p>
+    <div class="fb">$$\int_{-\pi/4}^{\pi}|\sin x|\,dx=-\int_{-\pi/4}^{0}\sin x\,dx+\int_0^{\pi}\sin x\,dx=\left[\cos x\right]_{-\pi/4}^{0}+\left[-\cos x\right]_0^{\pi}=\left(1-\frac{\sqrt{2}}{2}\right)+2=3-\frac{\sqrt{2}}{2}$$</div>
+  </div>
+</section>
+
+<!-- ═══════════ SECTION 3 ═══════════ -->
+<section class="sec" id="c10-s3">
+  <div class="sec-title"><div class="snum">3</div><h2 class="st">Volume of Solid of Revolution</h2></div>
+  <p class="p">When a region is rotated about a straight line, the solid formed is called a <strong>solid of revolution</strong>. The volume is found by summing the volumes of thin circular discs.</p>
+
+  <div class="nb b"><span class="ni">ℹ</span><span><strong>Disc method intuition:</strong> A thin vertical strip of width $\delta x$ and height $y$, when rotated 360° about the x-axis, sweeps out a disc of radius $y$ and thickness $\delta x$. Volume of disc $\approx \pi y^2\delta x$. Summing all discs and taking the limit gives the integral.</span></div>
+
+  <div class="law">
+    <div class="law-lbl">📏 Hard Law — Axis Dictates Variable (H2 Syllabus Boundary)</div>
+    <div class="axis-law">
+      <div class="al-card horiz">
+        <div class="al-axis">$y = k$ (horizontal)</div>
+        <div class="al-var">→ Use $dx$ (vertical strips)</div>
+        <div class="al-why">$V=\pi\int_a^b(\text{radius})^2\,dx$</div>
+      </div>
+      <div class="al-card vert">
+        <div class="al-axis">$x = h$ (vertical)</div>
+        <div class="al-var">→ Use $dy$ (horizontal strips)</div>
+        <div class="al-why">$V=\pi\int_p^q(\text{radius})^2\,dy$</div>
+      </div>
+    </div>
+    <div class="nb r" style="margin:6px 0 0"><span class="ni">⚠</span><span>Using the other variable requires the <strong>Cylindrical Shell Method</strong> — which is <strong>NOT in the H2 syllabus</strong>. Attempting it will produce wrong or impossible algebra. If you find yourself needing it, you are almost certainly misidentifying the axis.</span></div>
+  </div>
+
+  <!-- 3.1 -->
+  <h3 class="sub" id="c10-s31">3.1 Volume of Revolution about the x-axis</h3>
+
+  <div class="fb">$$V=\pi\int_a^b y^2\,dx=\pi\int_a^b[f(x)]^2\,dx$$</div>
+
+  <p class="p">The region is bounded by $y=f(x)$, the x-axis, and the lines $x=a$, $x=b$. Rotated completely (360°) about the x-axis.</p>
+
+  <div class="nb y"><span class="ni">💡</span><span>"Four right angles" = 360° = $2\pi$ radians = "completely" = one full revolution. These are all equivalent.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 12</div>
+    <p class="p">Region $R$ in the first quadrant is bounded by $y=2x^{1/3}$, the x-axis and $x=8$. Find the exact volume when $R$ is rotated through four right angles about the x-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <div class="fb">$$V=\pi\int_0^8 y^2\,dx=\pi\int_0^8\left(2x^{1/3}\right)^2dx=\pi\int_0^8 4x^{2/3}\,dx=4\pi\left[\frac{x^{5/3}}{5/3}\right]_0^8=\frac{12\pi}{5}\left[x^{5/3}\right]_0^8=\frac{12\pi}{5}(32)=\frac{384\pi}{5}\text{ units}^3$$</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl g">Try This!</div>
+    <p class="p">Region $R$ is bounded by $y=(4x^2+9a^2)^{-1/2}$, the x-axis, the y-axis and $x=1.5a$ ($a>0$). Find the volume when $R$ is rotated completely about the x-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <div class="fb">$$V=\pi\int_0^{3a/2}\frac{1}{4x^2+9a^2}\,dx=\frac{\pi}{9a^2}\int_0^{3a/2}\frac{1}{\frac{4x^2}{9a^2}+1}\,dx$$</div>
+    <p class="p">Let $u=\frac{2x}{3a}$, matching $\frac{1}{a}\tan^{-1}\!\left(\frac{x}{a}\right)$ form with $a_0=\frac{3a}{2}$:</p>
+    <div class="fb">$$V=\frac{\pi}{4a}\left[\frac{1}{3}\tan^{-1}\!\left(\frac{2x}{3a}\right)\right]_0^{3a/2}=\frac{\pi}{12a}\cdot\frac{\pi}{4}=\frac{\pi^2}{48a}\text{ units}^3$$</div>
+  </div>
+
+  <!-- 3.2 -->
+  <h3 class="sub" id="c10-s32">3.2 Volume of Revolution about the y-axis</h3>
+
+  <div class="fb">$$V=\pi\int_p^q x^2\,dy=\pi\int_p^q[g(y)]^2\,dy$$</div>
+
+  <p class="p">The region is bounded by $x=g(y)$, the y-axis, and the lines $y=p$, $y=q$. Rotated completely about the y-axis. <strong>Express $x^2$ in terms of $y$</strong> before integrating.</p>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 13</div>
+    <p class="p">The region bounded by $y=e^{x+1}$, $y=1$ and the y-axis is rotated through 360° about the y-axis. Find the numerical value of the volume.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Express $x$ in terms of $y$: $y=e^{x+1}\Rightarrow x=\ln y-1$. Limits: from $y=1$ (when $x=0$) to $y=e$ (when $x=1$).</p>
+    <div class="fb">$$V=\pi\int_1^e x^2\,dy=\pi\int_1^e(\ln y-1)^2\,dy\approx 1.37\text{ units}^3$$</div>
+    <div class="nb y" style="margin-top:6px"><span class="ni">💡</span><span>"Numerical value" is a hint you may use GC to evaluate the integral directly.</span></div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example — Trig Substitution in Volume</div>
+    <p class="p">Region $Q$ is bounded by $y=\dfrac{x}{\sqrt[3]{1-4x^2}}$, $x=-\frac{1}{4}$, $x=\frac{1}{4}$, and the x-axis. Using the substitution $2x=\sin\theta$, find the exact volume when $Q$ is rotated 4 right angles about the x-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">By symmetry, the region from $x=-\frac{1}{4}$ to $x=0$ is the mirror of $x=0$ to $x=\frac{1}{4}$:</p>
+    <div class="fb">$$V=\pi\int_{-1/4}^{1/4}y^2\,dx=2\pi\int_0^{1/4}\frac{x^2}{\sqrt{1-4x^2}}\,dx$$</div>
+    <p class="p">Substitution: $2x=\sin\theta$, $x=\frac{1}{2}\sin\theta$, $dx=\frac{1}{2}\cos\theta\,d\theta$. When $x=0$: $\theta=0$; when $x=\frac{1}{4}$: $\theta=\frac{\pi}{6}$.</p>
+    <div class="fb">$$=2\pi\int_0^{\pi/6}\frac{\frac{1}{4}\sin^2\theta}{\sqrt{1-\sin^2\theta}}\cdot\frac{1}{2}\cos\theta\,d\theta=\frac{\pi}{4}\int_0^{\pi/6}\sin^2\theta\,d\theta=\frac{\pi}{8}\int_0^{\pi/6}(1-\cos 2\theta)\,d\theta$$</div>
+    <div class="fb">$$=\frac{\pi}{8}\left[\theta-\frac{1}{2}\sin 2\theta\right]_0^{\pi/6}=\frac{\pi}{8}\left[\frac{\pi}{6}-\frac{\sqrt{3}}{4}\right]=\frac{\pi}{96}(2\pi-3\sqrt{3})\text{ units}^3$$</div>
+  </div>
+
+  <!-- 3.3 -->
+  <h3 class="sub" id="c10-s33">3.3 Volume for Region Bounded by Two Curves</h3>
+  <p class="p">When the region is bounded by two curves, the solid of revolution has a "hole" in the middle (like a washer). Use subtraction:</p>
+
+  <div class="fb gold">$$V_{\text{total}}=V_{\text{larger solid}}-V_{\text{smaller solid}}$$</div>
+
+  <div class="tc">
+    <div class="ibox tip"><div class="lbl">About x-axis</div>$V=\pi\int_a^b y_{\text{upper}}^2\,dx - \pi\int_a^b y_{\text{lower}}^2\,dx$</div>
+    <div class="ibox inmf"><div class="lbl">About y-axis</div>$V=\pi\int_p^q x_{\text{right}}^2\,dy - \pi\int_p^q x_{\text{left}}^2\,dy$</div>
+  </div>
+
+  <div class="danger">
+    <div class="dan-lbl">🚨 #1 Algebraic Error — The Washer Square Trap</div>
+    <div class="wbox">
+      <div class="wl">✗ Wrong — Do NOT do this</div>
+      $$V=\pi\int_a^b\bigl(y_{\text{upper}}-y_{\text{lower}}\bigr)^2\,dx$$
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">Expanding $(y_1-y_2)^2=y_1^2-2y_1y_2+y_2^2$ gives extra cross-term $-2y_1y_2$ which is physically meaningless.</p>
+    </div>
+    <div class="rbox">
+      <div class="rl">✓ Right — Square each radius first, THEN subtract</div>
+      $$V=\pi\int_a^b\bigl(y_{\text{upper}}^2-y_{\text{lower}}^2\bigr)\,dx$$
+    </div>
+    <div class="nb y" style="margin-top:8px;margin-bottom:0"><span class="ni">🧠</span><span><strong>Memory hook:</strong> "Square → then subtract. NOT subtract → then square." Each radius is squared independently because the disc area formula is $\pi r^2$ applied to each radius separately.</span></div>
+  </div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 15</div>
+    <p class="p">Region $R$ is bounded by $y^2=x$ and $y=x$. Find the exact volume when $R$ is rotated one revolution about the x-axis.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">Intersections: $y^2=x$ and $y=x\Rightarrow x^2=x\Rightarrow x=0$ or $x=1$. On $[0,1]$: $y=\sqrt{x}$ is upper, $y=x$ is lower (in the first quadrant).</p>
+    <p class="p">Larger solid: rotate region under $y=\sqrt{x}$ (equivalently, $y^2=x$) about x-axis.</p>
+    <p class="p">Smaller solid: rotate triangle (under $y=x$) about x-axis — this is a cone with radius 1, height 1.</p>
+    <div class="fb">$$V=\pi\int_0^1 x\,dx-\frac{1}{3}\pi(1)^2(1)=\pi\left[\frac{x^2}{2}\right]_0^1-\frac{\pi}{3}=\frac{\pi}{2}-\frac{\pi}{3}=\frac{\pi}{6}\text{ units}^3$$</div>
+  </div>
+
+  <!-- 3.4 -->
+  <h3 class="sub" id="c10-s34">3.4 Composite Solids</h3>
+  <p class="p">A composite solid is formed when different parts of the region are bounded by different curves. The total volume is the <strong>sum</strong> of the constituent volumes.</p>
+
+  <div class="fb">$$V_{\text{composite}}=V_1+V_2+\cdots$$</div>
+
+  <div class="nb b"><span class="ni">ℹ</span><span>Common composite: one piece bounded by a curve up to some y-value, plus a cylinder for the rest. Always draw the picture to see which pieces form the solid.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 16 — [Modified N77/P1/7]</div>
+    <p class="p">Region bounded by $y=\dfrac{1}{1+2x}$, $x=2$, and the axes is rotated completely about the y-axis. Prove the volume is $\dfrac{\pi}{2}(4-\ln 5)$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">The curve cuts the y-axis at $y=1$ (when $x=0$) and the line $x=2$ at $y=\frac{1}{5}$. The solid about the y-axis consists of:</p>
+    <ul class="bl">
+      <li>Volume from $y=\frac{1}{5}$ to $y=1$ (between curve and y-axis)</li>
+      <li>Volume of cylinder (radius 2, height $\frac{1}{5}$) for $y=0$ to $y=\frac{1}{5}$</li>
+    </ul>
+    <p class="p">From the curve: $x=\dfrac{1}{2y}-\dfrac{1}{2}$.</p>
+    <div class="fb">$$V=\pi\int_{1/5}^{1}x^2\,dy+\pi(2)^2\!\cdot\!\frac{1}{5}=\pi\int_{1/5}^{1}\!\!\left(\frac{1}{2y}-\frac{1}{2}\right)^{\!2}dy+\frac{4\pi}{5}$$</div>
+    <div class="fb">$$=\pi\int_{1/5}^{1}\!\!\left(\frac{1}{4y^2}-\frac{1}{2y}+\frac{1}{4}\right)dy+\frac{4\pi}{5}=\pi\left[-\frac{1}{4y}-\frac{1}{2}\ln|y|+\frac{y}{4}\right]_{1/5}^{1}+\frac{4\pi}{5}=\frac{\pi}{2}(4-\ln 5)\text{ (shown)}$$</div>
+  </div>
+
+  <div class="ex">
+    <div class="exl g">Try This! — Wine Glass</div>
+    <p class="p">A wine glass vessel is modelled by $f(x)=\begin{cases}2\ln x & 1<x\le e\\(x-e)^2+2 & e\le x\le 5\end{cases}$ (cm). The vessel is formed when the region between the curves and the y-axis is rotated completely about the y-axis. Find the volume of wine when depth is 4 cm.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p">When depth = 4 cm, $y=4$. Piece 1: $y=2\ln x\Rightarrow x^2=e^y$, for $0\le y\le 2$. Piece 2: $y=(x-e)^2+2\Rightarrow x^2=(\sqrt{y-2}+e)^2$, for $2\le y\le 4$.</p>
+    <div class="fb">$$V=\pi\int_0^2 e^y\,dy+\pi\int_2^4(\sqrt{y-2}+e)^2\,dy\approx 105.0\text{ cm}^3\quad(4\text{ s.f.})$$</div>
+  </div>
+
+  <!-- 3.5 -->
+  <h3 class="sub" id="c10-s35">3.5 Rotation about an Axis Parallel to x-axis or y-axis</h3>
+  <p class="p">When the axis is $y=k$ (not the x-axis), or $x=h$ (not the y-axis), you <strong>cannot</strong> apply the standard formulas directly. You must translate the region first.</p>
+
+  <div class="flow">
+    <div class="fs"><div class="sl">Strategy — Translation Method</div>The volume of revolution formed when rotating $R$ about $y=k$ is <strong>the same</strong> as the volume formed when rotating the translated region $S$ about the x-axis, where $S$ is obtained by translating $R$ downward by $k$ units (i.e. replace $y$ with $y-k$).</div>
+    <div class="arr">↓</div>
+    <div class="fs"><div class="sl">In practice</div>If curve $C$ has equation $y=f(x)$ and axis is $y=k$, the translated curve $C'$ has equation $y=f(x)-k$. Apply $V=\pi\int_a^b(y-k)^2\,dx$ — or equivalently, use the new $y$ in the standard formula.</div>
+  </div>
+
+  <div class="insight">
+    <div class="ins-lbl">🎯 Distance Thinking — The Sign-Proof Mental Model</div>
+    <p class="p" style="margin:0 0 8px">Instead of memorising whether to write $(f(x)-k)$ or $(k-f(x))$, think geometrically:</p>
+    <div class="fb green" style="margin:8px 0;">$$V=\pi\int_a^b(\text{radius})^2\,dx \qquad\text{where radius}=\text{distance from curve to rotation axis}$$</div>
+    <div class="tc" style="margin:8px 0;">
+      <div class="ibox inmf"><div class="lbl">If curve is above axis $y=k$</div>Radius $= f(x)-k \ge 0$. Write $(f(x)-k)^2$.</div>
+      <div class="ibox inmf"><div class="lbl">If curve is below axis $y=k$</div>Radius $= k-f(x) \ge 0$. Write $(k-f(x))^2$.</div>
+    </div>
+    <div class="nb g" style="margin:8px 0 0"><span class="ni">💡</span><span><strong>Key insight:</strong> $(f(x)-k)^2=(k-f(x))^2$ always — squaring eliminates the sign. So whether you write $f(x)-k$ or $k-f(x)$, the volume formula gives the same answer. Just use whichever makes the non-negative nature obvious.</span></div>
+  </div>
+
+  <div class="nb r"><span class="ni">⚠</span><span>The translated region $S$ (bounded by new curve $C'$ and x-axis) has the <strong>same shape and size</strong> as region $R$ (bounded by $C$ and $y=k$). So their volumes of revolution about the respective axes are equal.</span></div>
+
+  <div class="ex">
+    <div class="exl b">Worked Example 17</div>
+    <p class="p">Region $R$ is bounded by $y=2e^{-x}$, $x=1$, and $y=2$. (i) Write the equation of the curve after translating 2 units in the negative y-direction. (ii) Find the exact volume when $R$ is rotated completely about $y=2$.</p>
+    <hr class="dv" style="margin:10px 0;">
+    <p class="p"><strong>(i)</strong> Translated curve: $y=2e^{-x}-2$.</p>
+    <p class="p"><strong>(ii)</strong> The volume about $y=2$ equals the volume when region $S$ (bounded by $y=2e^{-x}-2$, x-axis, and $x=0$ to $x=1$) is rotated about the x-axis:</p>
+    <div class="fb">$$V=\pi\int_0^1(2e^{-x}-2)^2\,dx=\pi\int_0^1(4e^{-2x}-8e^{-x}+4)\,dx$$</div>
+    <div class="fb">$$=\pi\left[-2e^{-2x}+8e^{-x}+4x\right]_0^1=\pi\left[(-2e^{-2}+8e^{-1}+4)-(-2+8)\right]=2\pi(-e^{-2}+4e^{-1}-1)\text{ units}^3$$</div>
+  </div>
+
+  <div class="tw"><table>
+    <thead><tr><th>Axis of Rotation</th><th>How to handle</th><th>Formula used</th></tr></thead>
+    <tbody>
+      <tr><td>x-axis ($y=0$)</td><td>Directly</td><td>$\pi\int_a^b y^2\,dx$</td></tr>
+      <tr><td>y-axis ($x=0$)</td><td>Directly</td><td>$\pi\int_p^q x^2\,dy$</td></tr>
+      <tr><td>$y=k$ (parallel to x-axis)</td><td>Translate curve down by $k$: new $y\to y-k$</td><td>$\pi\int_a^b(y-k)^2\,dx$</td></tr>
+      <tr><td>$x=h$ (parallel to y-axis)</td><td>Translate curve left by $h$: new $x\to x-h$</td><td>$\pi\int_p^q(x-h)^2\,dy$</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="nb b"><span class="ni">💡</span><span><strong>Useful geometric shortcuts:</strong><br>
+  • Rotating a right triangle about its leg → <strong>cone</strong>: $V=\frac{1}{3}\pi r^2 h$<br>
+  • Rotating a rectangle about its edge → <strong>cylinder</strong>: $V=\pi r^2 h$<br>
+  Use these to avoid integration when the region has a triangular or rectangular boundary.</span></div>
+</section>
+
+<!-- ═══════════ COMMON MISTAKES ═══════════ -->
+<section class="sec" id="c10-mis">
+  <div class="sec-title"><div class="snum red">✗</div><h2 class="st">Common Mistakes — Wrong vs Right</h2></div>
+  <p class="p">The most penalised errors in A-Level examinations. Study each one carefully.</p>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Area below x-axis</span>$\displaystyle\int_1^4(x-1)(x-4)\,dx = \text{area}$</div>
+    <div class="mright"><span class="tg">✓ Right</span>Area $=-\displaystyle\int_1^4(x-1)(x-4)\,dx$ since region is below x-axis. GC gives $-4.5$; area $=\frac{9}{2}$.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Mixed-sign single integral</span>$\displaystyle\int_a^b f(x)\,dx$ for region crossing x-axis at $c\in(a,b)$</div>
+    <div class="mright"><span class="tg">✓ Right</span>Split: $\displaystyle\int_a^c f(x)\,dx+\left(-\int_c^b f(x)\,dx\right)$. Never integrate across a sign change for area.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Forgetting to make x the subject</span>$\displaystyle\int_p^q y\,dy$ when computing area w.r.t. y-axis</div>
+    <div class="mright"><span class="tg">✓ Right</span>Express $x=g(y)$, then $\displaystyle\int_p^q g(y)\,dy$. Limits must be y-values; integrand must be $x$ as a function of $y$.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Volume without $\pi$</span>$V=\displaystyle\int_a^b y^2\,dx$</div>
+    <div class="mright"><span class="tg">✓ Right</span>$V=\pi\displaystyle\int_a^b y^2\,dx$. Always include $\pi$ — each disc has cross-sectional area $\pi r^2=\pi y^2$.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Not squaring before integrating</span>$V=\pi\displaystyle\int_a^b y\,dx$ (forgot to square $y$)</div>
+    <div class="mright"><span class="tg">✓ Right</span>$V=\pi\displaystyle\int_a^b y^2\,dx$. The disc has radius $y$, so area $=\pi y^2$ (not $\pi y$).</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Two-curve volume without subtraction</span>$V=\pi\displaystyle\int_a^b y_1^2\,dx+\pi\int_a^b y_2^2\,dx$</div>
+    <div class="mright"><span class="tg">✓ Right</span>$V=\pi\displaystyle\int_a^b y_1^2\,dx-\pi\int_a^b y_2^2\,dx$ (larger minus smaller). Adding gives wrong solid.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Parallel axis without translation</span>Rotation about $y=2$: use $V=\pi\int y^2\,dx$ directly</div>
+    <div class="mright"><span class="tg">✓ Right</span>Replace $y$ with $y-2$: $V=\pi\int(y-2)^2\,dx$. Alternatively, translate the curve down by 2 and rotate about x-axis.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Modulus integral without splitting</span>$\displaystyle\int_0^{\sqrt{2}}|x^2+2x-3|\,dx=\left[\frac{x^3}{3}+x^2-3x\right]_0^{\sqrt{2}}$</div>
+    <div class="mright"><span class="tg">✓ Right</span>Find zeros in $[0,\sqrt{2}]$: $x=1$. Split at $x=1$. Negate integrand on $[0,1]$ (negative there), keep positive on $[1,\sqrt{2}]$.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Not sketching first</span>Setting up integral without knowing sign/position of region</div>
+    <div class="mright"><span class="tg">✓ Right</span>Always sketch the curve(s), mark the bounded region, and identify: above/below axis, intersection points, limits of integration.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Limit-of-sum: wrong limits</span>$\displaystyle\lim_{n\to\infty}\frac{1}{n}\sum_{r=1}^{n}f\!\!\left(\frac{r}{n}\right)\to\int_1^2 f(x)\,dx$</div>
+    <div class="mright"><span class="tg">✓ Right</span>When the sum starts at $r=1$ with height $f(r/n)$ and width $1/n$, the limit is $\int_0^1 f(x)\,dx$ (not $\int_1^2$). The variable goes from $0$ to $1$.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Washer: subtract then square</span>$V=\pi\displaystyle\int_a^b(y_{\text{upper}}-y_{\text{lower}})^2\,dx$</div>
+    <div class="mright"><span class="tg">✓ Right — Square each, then subtract</span>$V=\pi\displaystyle\int_a^b(y_{\text{upper}}^2-y_{\text{lower}}^2)\,dx$. Cross-term from wrong form is physically meaningless.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Axis shift: sign confusion</span>Curve $y=f(x)$ below axis $y=k$: unsure whether $(f(x)-k)$ or $(k-f(x))$</div>
+    <div class="mright"><span class="tg">✓ Right — Radius = distance to axis</span>$(f(x)-k)^2=(k-f(x))^2$ always. Sign is irrelevant — squaring kills it. Focus on the geometric distance.</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Wrong variable for rotation axis</span>Rotation about $y=3$ (horizontal): integrating w.r.t. $dy$ instead of $dx$</div>
+    <div class="mright"><span class="tg">✓ Right — Axis dictates variable</span>Horizontal axis ($y=k$) → $dx$. Vertical axis ($x=h$) → $dy$. Other direction requires Shell Method (NOT in H2 syllabus).</div>
+  </div>
+
+  <div class="mr">
+    <div class="mw"><span class="tg">✗ Wrong — Limit of sum: $\frac{1}{n}$ not visible</span>Treating $\sum\frac{r}{n^2+r^2}$ as though it cannot be converted to an integral</div>
+    <div class="mright"><span class="tg">✓ Right — Factor out $\frac{1}{n}$</span>$\displaystyle\sum\frac{r}{n^2+r^2}=\frac{1}{n}\sum\frac{r/n}{1+(r/n)^2}\to\int_0^1\!\frac{x}{1+x^2}\,dx$. Always force the strip-width $\frac{1}{n}$ to appear.</div>
+  </div>
+</section>
+
+<!-- ═══════════ EXAM TIPS ═══════════ -->
+<section class="sec" id="c10-tips">
+  <div class="sec-title"><div class="snum green">★</div><h2 class="st">Exam Tips & Special Scenarios</h2></div>
+
+  <h3 class="sub">When the Question Says "Exact"</h3>
+  <div class="nb r"><span class="ni">⚠</span><span>The word <strong>"exact"</strong> means you must show algebraic working to evaluate the definite integral. Do NOT use GC to evaluate integrals directly. You may still use GC to <em>check</em> your answer, but the working must be shown analytically.</span></div>
+
+  <h3 class="sub">When the Question Says "Numerical Value"</h3>
+  <div class="nb g"><span class="ni">✓</span><span>The phrase <strong>"numerical value"</strong> is a hint that you MAY (and should) use GC to evaluate the definite integral. Give a decimal answer. This typically appears in volume problems where analytic integration would be very difficult.</span></div>
+
+  <h3 class="sub">GC Usage for Intersection Points</h3>
+  <ul class="bl">
+    <li>Always give intersection x-coordinates to at least <strong>5 significant figures</strong> when using GC as intermediate values.</li>
+    <li>State the values clearly before setting up the integral: "From GC, $x\approx -3.042941$ or $x\approx -0.3414448$".</li>
+    <li>For exact-form questions, find intersections algebraically.</li>
+  </ul>
+
+  <h3 class="sub">Signs Summary — When to Negate</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Situation</th><th>Sign of Integral</th><th>Area Formula</th></tr></thead>
+    <tbody>
+      <tr><td>Region <strong>above</strong> x-axis ($f(x)\ge 0$)</td><td>Positive</td><td>$\int_a^b f(x)\,dx$</td></tr>
+      <tr><td>Region <strong>below</strong> x-axis ($f(x)\le 0$)</td><td>Negative</td><td>$-\int_a^b f(x)\,dx$</td></tr>
+      <tr><td>Region <strong>right</strong> of y-axis ($g(y)\ge 0$)</td><td>Positive</td><td>$\int_p^q g(y)\,dy$</td></tr>
+      <tr><td>Region <strong>left</strong> of y-axis ($g(y)\le 0$)</td><td>Negative</td><td>$-\int_p^q g(y)\,dy$</td></tr>
+      <tr><td>Modulus integrand $|f(x)|$ where $f(x)<0$</td><td>Replace with positive</td><td>Replace $|f(x)|$ with $-f(x)$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Symmetry Shortcut</h3>
+  <p class="p">When the integrand or region is symmetric, exploit it:</p>
+  <ul class="bl">
+    <li>If curve is symmetric about y-axis: $\int_{-a}^{a}f(x)\,dx=2\int_0^a f(x)\,dx$ (when $f$ is even).</li>
+    <li>If region is symmetric about x-axis: integrate the upper half and double.</li>
+    <li>In volume problems: if the volume element is symmetric about a vertical axis, integrate one half and multiply by 2.</li>
+  </ul>
+
+  <h3 class="sub">Volume of Standard Shapes (No Integration Needed)</h3>
+  <div class="sgrid">
+    <div class="scard a"><div class="slbl">Cone</div>Right triangle region rotated 360° about one of its legs.<br><br>$V=\dfrac{1}{3}\pi r^2 h$<br><br>$r$ = radius (perpendicular leg), $h$ = height (parallel leg)</div>
+    <div class="scard b"><div class="slbl">Cylinder</div>Rectangular region rotated 360° about one of its edges.<br><br>$V=\pi r^2 h$<br><br>$r$ = radius (width of rectangle), $h$ = height (length parallel to axis)</div>
+    <div class="scard c"><div class="slbl">When to use</div>Recognise the bounded region as a right triangle or rectangle, then use geometric formula instead of integration. Common in composite-solid problems.</div>
+    <div class="scard d"><div class="slbl">Watch out</div>These formulas only apply when rotating about the correct axis. A triangle rotated about its hypotenuse does NOT give a cone — use integration instead.</div>
+  </div>
+
+  <h3 class="sub">Limit-of-Sum — Key Structure Recognition</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Sum Structure</th><th>Integral it equals</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>$\displaystyle\frac{1}{n}\sum_{r=1}^{n}f\!\!\left(\frac{r}{n}\right)$</td><td>$\displaystyle\int_0^1 f(x)\,dx$</td><td>Width $\frac{1}{n}$, heights at $\frac{r}{n}$ for $r=1$ to $n$</td></tr>
+      <tr><td>$\displaystyle\frac{b-a}{n}\sum_{r=0}^{n-1}f\!\!\left(a+\frac{r(b-a)}{n}\right)$</td><td>$\displaystyle\int_a^b f(x)\,dx$</td><td>General form, left Riemann sum</td></tr>
+      <tr><td>$\displaystyle\frac{1}{n}\sum_{r=0}^{n-1}f\!\!\left(\frac{r}{n}\right)$</td><td>$\displaystyle\int_0^1 f(x)\,dx$</td><td>Heights at $0,\frac{1}{n},\frac{2}{n},\ldots,\frac{n-1}{n}$</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 class="sub">Area Using y-axis Integration — When to Use It</h3>
+  <ul class="bl">
+    <li>When the curve equation is easier to write as $x=g(y)$ than $y=f(x)$.</li>
+    <li>When the region is naturally bounded by horizontal lines ($y=p$, $y=q$).</li>
+    <li>When integrating w.r.t. $x$ would require splitting into multiple pieces, but w.r.t. $y$ gives a single integral.</li>
+    <li>When the question involves a curve like $x=y^2$, $x=\ln y$, $x=e^y-1$, etc.</li>
+  </ul>
+</section>
+
+</main>
+
+
+</div>
+
 <script>
-const secs=document.querySelectorAll('.sec');
-const links=document.querySelectorAll('#sb a');
-const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){links.forEach(l=>l.classList.remove('active'));const l=document.querySelector(`#sb a[href="#${en.target.id}"]`);if(l)l.classList.add('active');}});},{rootMargin:'-15% 0px -75% 0px'});
-secs.forEach(s=>obs.observe(s));
+function switchChapter(ch) {
+  // Hide all panels
+  document.querySelectorAll('.chap-panel').forEach(p => p.classList.remove('active'));
+  // Deactivate all tabs
+  document.querySelectorAll('.sel-tab').forEach(t => t.classList.remove('active'));
+  // Show selected panel
+  document.getElementById('panel-' + ch).classList.add('active');
+  // Activate selected tab
+  document.getElementById('tab-' + ch).classList.add('active');
+  // Reset scroll to top
+  window.scrollTo(0, 0);
+  // Re-render KaTeX for the newly visible panel
+  if (window.renderMathInElement) {
+    renderMathInElement(document.getElementById('panel-' + ch), {
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false}
+      ],
+      throwOnError:false
+    });
+  }
+}
+
+// Sidebar active-link scroll spy — runs per-chapter
+function setupScrollSpy(sbId, mainId) {
+  const sb = document.getElementById(sbId);
+  if (!sb) return;
+  const panel = sb.closest('.chap-panel');
+  const secs = panel ? panel.querySelectorAll('.sec') : [];
+  const links = sb.querySelectorAll('a');
+  if (!secs.length || !links.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(en => {
+      if (en.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const target = '#' + en.target.id;
+        const l = sb.querySelector('a[href="' + target + '"]');
+        if (l) l.classList.add('active');
+      }
+    });
+  }, {rootMargin: '-15% 0px -75% 0px'});
+  secs.forEach(s => obs.observe(s));
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function() {
+  setupScrollSpy('c9-sb', 'c9-main');
+  setupScrollSpy('c10-sb', 'c10-main');
+});
 </script>
 </body>
 </html>
